@@ -4104,8 +4104,8 @@
 		(uuid "ff03930f-162f-4cbd-b4ea-036dd2bd3aa1")
 	)
 	(no_connect
-		(at 158.75 93.98)
-		(uuid "539cec03-0266-47d9-9821-f6bfd66e5d5e")
+		(at 158.75 91.44)
+		(uuid "412d719d-0a27-4061-aee8-fcbc2da39762")
 	)
 	(no_connect
 		(at 158.75 96.52)
@@ -5100,7 +5100,7 @@
 		(uuid "598f8536-01e4-44cf-8731-713e4078c295")
 	)
 	(label "D7_LCD"
-		(at 158.75 127 0)
+		(at 158.75 121.92 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5140,7 +5140,7 @@
 		(uuid "81aa4da7-230f-46cf-b495-e98c59291ad8")
 	)
 	(label "RS_LCD"
-		(at 158.75 91.44 0)
+		(at 158.75 127 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5279,8 +5279,8 @@
 		)
 		(uuid "c582ddff-e6de-4ede-b5b9-f5c30a3b9d5a")
 	)
-	(label "PD5{slash}GATE"
-		(at 158.75 121.92 0)
+	(label "PC2{slash}GATE"
+		(at 158.75 93.98 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5289,7 +5289,7 @@
 		)
 		(uuid "c9c4cd1d-cdcd-4639-b9b5-fb2cffded8de")
 	)
-	(label "PD5{slash}GATE"
+	(label "PC2{slash}GATE"
 		(at 264.16 76.2 180)
 		(effects
 			(font
@@ -7644,7 +7644,7 @@
 				)
 			)
 		)
-		(property "Value" "220"
+		(property "Value" "330"
 			(at 180.2765 132.08 90)
 			(effects
 				(font

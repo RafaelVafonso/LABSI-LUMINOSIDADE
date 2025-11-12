@@ -35,6 +35,7 @@ volatile uint8_t contador = 0;
 volatile char flag_2ms = 0;
 volatile uint8_t display_counter = 0;
 uint16_t lux_value = 0;
+uint16_t servo_pwm_value = 188;
 
 //Detect BH1750
 uint8_t sensor_count = 0;  // 0, 1, ou 2
@@ -226,8 +227,8 @@ uint16_t bh1750_read(uint8_t addr){
             return 0;            
         }
     
-    i2c_write((addr << 1) | 1);  // SLA+R 
-    if (i2c_get_status() != 0x40){ //SLA+R has been transmitted; ACK received
+    i2c_write((addr << 1) | 1); 
+    if (i2c_get_status() != 0x40){ //SLA+R; ACK received
             i2c_stop();
             return 0;            
         }
@@ -237,13 +238,13 @@ uint16_t bh1750_read(uint8_t addr){
     
     i2c_stop();
     
-    // Calculate lux: (raw_data) / 1.2
+    // lux: (data) / 1.2
     uint16_t data = (high_byte << 8) | low_byte;
 
     return (uint16_t)((float)data / 1.2);
 }
 void detect_sensors(void){
-    sensor1_present = bh1750_send(BH1750_ADDR1, BH1750_POWER_ON) && bh1750_send(BH1750_ADDR1, BH1750_CONT_HIGH_RES_MODE2);
+    sensor1_present = bh1750_send(BH1750_ADDR1, BH1750_POWER_ON) && bh1750_send(BH1750_ADDR1, BH1750_CONT_HIGH_RES_MODE2);  
     sensor2_present = bh1750_send(BH1750_ADDR2, BH1750_POWER_ON) && bh1750_send(BH1750_ADDR2, BH1750_CONT_HIGH_RES_MODE2);
     sensor_count = sensor1_present + sensor2_present;
 }
@@ -257,7 +258,6 @@ uint16_t bh1750_read_sensors(void){
         if (lux1 > 0) {
             return lux1;
         } else {
-            
             return lux2;
         }
     }
@@ -278,6 +278,17 @@ uint16_t average_lux(uint16_t new_reading) {
     }
     return sum / AVG_SAMPLES;
 }
+void pwm_Servo_init(void){
+
+DDRB |= (1 << PB1);
+TCCR1A |= (1 << COM1A1) | (1 << WGM11);
+TCCR1B |= (1 << WGM13) | (1 << CS11) | (1 << CS10);
+ICR1 = 2500;
+OCR1A = 188; // posiçao 0 do motor
+
+}
+
+
 // --- Timer 0 for 2ms interrupt (for timing and toggling PD6) ---
 void onda1Hz_init(void) {
     DDRD |= (1 << PD6); // PD6 as output (LED check)
@@ -335,7 +346,8 @@ int main(void) {
                 
                 // Read BH1750 lux value
                 lux_value = bh1750_read_sensors();
-                averaged_lux = average_lux(lux_value);    
+                averaged_lux = average_lux(lux_value);  
+ 
                 // Line 1: Display Lux
                 lcd_set_cursor(0, 0);
                 // Use %4d to pad with spaces and " lx" for units
@@ -349,5 +361,6 @@ int main(void) {
             }
         }
     }
+
     return 0;
 }
