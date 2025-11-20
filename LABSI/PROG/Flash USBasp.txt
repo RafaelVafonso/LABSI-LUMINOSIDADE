@@ -1,0 +1,1 @@
+"C:\Users\Utilizador\Desktop\8.1\avrdude.exe" -c usbasp -p m328p -U flash:w:"C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1\build\MiniCore.avr.328\PROGv1.ino.hex"

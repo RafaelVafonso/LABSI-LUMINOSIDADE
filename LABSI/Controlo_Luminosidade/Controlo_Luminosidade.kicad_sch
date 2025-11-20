@@ -4743,6 +4743,10 @@
 		(uuid "f64b5a2c-ec2b-441b-aac2-789a8468a9ba")
 	)
 	(no_connect
+		(at 104.14 40.64)
+		(uuid "1698ff86-3d2a-48dd-921e-99df8359bd6a")
+	)
+	(no_connect
 		(at 146.05 138.43)
 		(uuid "196b7fe7-bd70-4d7a-a4d5-927961e3b3f2")
 	)
@@ -4755,16 +4759,12 @@
 		(uuid "3c18595a-e8b8-434e-945a-79bc8392bf8a")
 	)
 	(no_connect
-		(at 104.14 45.72)
-		(uuid "57abf880-03af-442b-b7e6-29f24fc4b424")
+		(at 104.14 43.18)
+		(uuid "3c6df2fe-1837-4490-9db7-62b9ebf4f8b7")
 	)
 	(no_connect
 		(at 146.05 130.81)
 		(uuid "67c49836-f063-4ba2-b6fe-29e72cc47d5a")
-	)
-	(no_connect
-		(at 104.14 48.26)
-		(uuid "81420b0e-a78e-4059-bc19-5c8774a16d44")
 	)
 	(no_connect
 		(at 146.05 107.95)
@@ -4887,16 +4887,6 @@
 			(type default)
 		)
 		(uuid "1645409c-0fb7-49da-bb18-74c4c493cd46")
-	)
-	(wire
-		(pts
-			(xy 172.72 95.25) (xy 176.53 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "178b4bb0-ad58-47cb-800e-6ab9e958440c")
 	)
 	(wire
 		(pts
@@ -5057,16 +5047,6 @@
 			(type default)
 		)
 		(uuid "42ddeb0b-c0ba-4084-b614-0617ff67f5be")
-	)
-	(wire
-		(pts
-			(xy 172.72 93.98) (xy 172.72 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "43d8f844-7c15-416c-9345-5e6d920bc629")
 	)
 	(wire
 		(pts
@@ -5540,16 +5520,6 @@
 	)
 	(wire
 		(pts
-			(xy 176.53 95.25) (xy 176.53 100.33)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c0833557-aec2-4d9b-b16e-032df45294fd")
-	)
-	(wire
-		(pts
 			(xy 185.42 27.94) (xy 193.04 27.94)
 		)
 		(stroke
@@ -5899,7 +5869,7 @@
 		(uuid "29dc6e10-078a-470c-9a89-d4eeae5915a7")
 	)
 	(label "D7_LCD"
-		(at 104.14 43.18 0)
+		(at 104.14 30.48 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5919,7 +5889,7 @@
 		(uuid "30848363-947a-472a-91f5-9f4e0ffbc38d")
 	)
 	(label "EN_LCD"
-		(at 104.14 30.48 0)
+		(at 104.14 45.72 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5959,7 +5929,7 @@
 		(uuid "3e152927-1998-487c-858f-82d62f21bfc7")
 	)
 	(label "D4_LCD"
-		(at 104.14 35.56 0)
+		(at 104.14 38.1 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5969,7 +5939,7 @@
 		(uuid "3e1acd93-9602-4e33-bc37-3fd87f6abd8c")
 	)
 	(label "D5_LCD"
-		(at 104.14 38.1 0)
+		(at 104.14 35.56 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -6049,7 +6019,7 @@
 		(uuid "83a50de8-5d55-4177-aec1-9c46fee20a19")
 	)
 	(label "D6_LCD"
-		(at 104.14 40.64 0)
+		(at 104.14 33.02 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -6219,7 +6189,7 @@
 		(uuid "ce85ffc5-e061-4660-a9dd-3415c2cb6baf")
 	)
 	(label "RS_LCD"
-		(at 104.14 33.02 0)
+		(at 104.14 48.26 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7301,7 +7271,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 156.972 114.3 90)
 			(effects
 				(font
@@ -8236,7 +8206,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x03_P2.54mm_Vertical"
 			(at 181.61 102.87 0)
 			(effects
 				(font
@@ -11617,7 +11587,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 164.592 116.84 90)
 			(effects
 				(font
@@ -12340,7 +12310,7 @@
 	)
 	(symbol
 		(lib_id "power:+5V")
-		(at 172.72 93.98 0)
+		(at 176.53 100.33 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -12348,7 +12318,7 @@
 		(dnp no)
 		(uuid "ff3e4d6c-762d-4d39-b6c3-bf2a02a4007b")
 		(property "Reference" "#PWR042"
-			(at 172.72 97.79 0)
+			(at 176.53 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12357,7 +12327,7 @@
 			)
 		)
 		(property "Value" "+5V"
-			(at 173.482 90.678 0)
+			(at 177.292 97.028 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12365,7 +12335,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 172.72 93.98 0)
+			(at 176.53 100.33 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12374,7 +12344,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 172.72 93.98 0)
+			(at 176.53 100.33 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12383,7 +12353,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 172.72 93.98 0)
+			(at 176.53 100.33 0)
 			(effects
 				(font
 					(size 1.27 1.27)

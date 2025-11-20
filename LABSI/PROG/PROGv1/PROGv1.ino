@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define F_CPU 16000000UL  
 #define LCD_I2C_ADDR 0x20  // Endereço I2C do PCF8574T (ajuste se necessário)
@@ -17,10 +18,15 @@
 #define MODE_AUTOMATIC 0
 #define MODE_MANUAL 1
 
-
 #define BOTAO_TOUCH PC1
 
-// --- VARIÁVEIS DE CONTROLO DE TEMPO E ESTADO (NON-BLOCKING) ---
+#define ADC_POT 0 //ADC0 (PC0)
+#define I2C_TIMEOUT_CYCLES 20000
+
+#define ADC_THRESHOLD 10 // Tolerância
+#define FIX_TIME_TICKS 50// 3.0s / 2ms = 1500 ticks
+
+// --- VARIÁVEIS DE CONTROLO DE TEMPO E ESTADO ---
 volatile uint16_t g_delay_counter_2ms = 0; // Contador principal, decrementa a cada 2ms
 volatile uint8_t g_init_state = 0;       // Máquina de estados para inicialização
 volatile uint8_t g_setup_done = 0;       // Flag: 1 quando setup concluído
@@ -28,10 +34,15 @@ volatile uint8_t g_operating_mode = MODE_AUTOMATIC;
 volatile uint8_t g_mode_changed = 1;      // Flag para limpar LCD
 volatile uint8_t g_prev_pc1_state = 0;    // Para detetar a borda do botão
 volatile uint8_t g_mode_locked = 0;       // Bloqueio após 1º toque
-
+volatile uint16_t g_target_lux = 0;     
+volatile uint16_t g_current_pot_value = 0; // Valor lido do Potenciómetro
+volatile uint8_t g_adc_in_progress = 0; // Flag para ADC non-blocking
 volatile uint8_t g_contador = 0;
 volatile char g_flag_2ms = 0;
 volatile uint8_t g_display_counter = 0;
+volatile uint16_t g_adc_old_reading = 0; // Leitura da última média (para comparação)
+volatile uint8_t g_adc_fix_state = 0;// 0: Estável, 1: A Mover, 2: Aguardar Fixação (3s)
+volatile uint16_t g_adc_fix_timer = 0;// Contador descendente para 3 segundos
 
 uint16_t g_lux_value = 0;
 uint16_t g_servo_pwm_value = 188;
@@ -44,6 +55,23 @@ uint8_t g_sensor2_present = 0;
 uint16_t lux_buffer[AVG_SAMPLES] = {0};
 uint8_t g_buffer_index = 0;
 uint16_t g_averaged_lux = 0;
+
+uint16_t adc_buffer[AVG_SAMPLES] = {0};
+uint8_t g_adc_buffer_index;
+uint16_t g_adc_avg;
+
+
+//Controlo Motor
+typedef enum{
+    FECHADA = 0,
+    METADE = 1,
+    ABERTA = 2,
+    LUZ = 3
+}Servo_pos;
+
+uint8_t g_estado_atual;
+Servo_pos pos_desejada;
+void control_motor(Servo_pos pos_desejada);
 
 // --- FUNÇÕES DE ATRASO CRÍTICO (us) ---
 // NOTA: Estas são mantidas para garantir o timing do pulso EN do LCD (requisito de hardware).
@@ -63,9 +91,9 @@ void delay_us(uint16_t us) {
 }
 
 // ---  ATRASO NON-BLOCKING (BASEADO EM 2MS) ---
-// Inicia um atraso dado em milissegundos. Arredonda para cima para garantir o mínimo.
+// Arredonda para cima para garantir o mínimo.
 void START_NB_DELAY_MS(uint16_t ms) {
-g_delay_counter_2ms = (ms / 2) + 1;
+   g_delay_counter_2ms = (ms / 2) + 1;
  }
 
 // Retorna 1 se o atraso terminar
@@ -81,7 +109,9 @@ ISR(TIMER0_COMPA_vect){
    if (g_delay_counter_2ms > 0) {
         g_delay_counter_2ms--;
     }
-    
+    if (g_adc_fix_state == 2 && g_adc_fix_timer > 0) {
+        g_adc_fix_timer--;
+    }
    g_contador++;
    if (g_contador >= 250) { 
    PORTD ^= (1 << PD6); 
@@ -93,7 +123,7 @@ ISR(TIMER0_COMPA_vect){
 ISR(PCINT1_vect) {
 
     uint8_t current_state = PINC & (1 << PC1); 
-    uint8_t g_prev_pc1_state = 0;
+
     if (current_state > g_prev_pc1_state) {
         // Transição de 0 para 1 detectada 
         
@@ -117,7 +147,91 @@ ISR(PCINT1_vect) {
     // 3. Atualizar o estado anterior para a próxima comparação
     g_prev_pc1_state = current_state;
 }
+void inic_adc(void) {
+    // 1. Referência: AVCC  Ajuste à Direita
+    ADMUX = (1 << REFS0);
+    
+    // 2. Prescaler: 128 (16MHz / 128 = 125kHz) e Habilita o ADC (ADEN)
+    ADCSRA = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0) | (1 << ADEN);
+    
+    // 3. Desliga Buffer Digital em PC0 para poupar energia
+    DIDR0 = (1 << ADC0D); 
+}
+uint16_t ler_adc_non_blocking(void) {
+    if (g_adc_in_progress == 0) {
 
+        ADMUX = (ADMUX & 0xF0) | ADC_POT; 
+        ADCSRA |= (1 << ADSC); 
+        g_adc_in_progress = 1;
+        return 0; // Conversão iniciada
+    } else {
+        // 2. conversão terminou (ADIF = 1)
+        if (ADCSRA & (1 << ADIF)) {
+            ADCSRA |= (1 << ADIF); // Limpa a flag (escreve 1)
+            g_adc_in_progress = 0;
+            
+            return ADC; 
+        }
+        return 0; // Conversão ainda em curso
+    }
+}
+
+uint16_t blocked_setpoint(uint16_t new_reading){
+   uint32_t sum = 0;
+   sum -= adc_buffer[g_adc_buffer_index];
+   adc_buffer[g_adc_buffer_index] = new_reading;
+   g_adc_buffer_index = (g_adc_buffer_index + 1) % AVG_SAMPLES;
+ 
+
+   for (uint8_t i = 0; i < AVG_SAMPLES; i++) {
+   sum += adc_buffer[i];
+   }
+   g_adc_avg = sum / AVG_SAMPLES;
+    uint16_t variation = abs((int16_t)g_adc_avg - (int16_t)g_adc_old_reading);
+    switch (g_adc_fix_state) {
+        
+        case 0: // ESTADO ESTÁVEL
+            if (variation > ADC_THRESHOLD) {
+                // Movimento detectado
+                g_adc_fix_state = 1; // Transição para: A MOVER
+            }
+            break;
+        case 1: // ESTADO A MOVER 
+            if (variation <= ADC_THRESHOLD) {
+                // Potenciómetro parou de se mover. Inicia contagem de 3s.
+                g_adc_fix_timer = FIX_TIME_TICKS; // Reset ao contador de 3s
+                g_adc_fix_state = 2;
+            } else {
+                // Continua a mover, atualiza o valor de referência para a próxima verificação
+                g_adc_old_reading = g_adc_avg; 
+            }
+            break;
+        case 2: // ESTADO AGUARDAR FIXAÇÃO
+            if (variation > ADC_THRESHOLD) {
+                // Movimento reiniciado antes de 3s terminarem.
+                g_adc_fix_state = 1; // Volta para: A MOVER
+            } else {
+                // Se o Timer (que é decrementado pelo ISR de 2ms) atingir 0
+                if (g_adc_fix_timer == 0) {
+                    // FIXAÇÃO COMPLETA
+                    g_target_lux = map_to_user_lux(g_adc_avg);
+                    g_adc_fix_state = 0;
+                }
+            }
+            break;
+    }
+
+    // Atualiza o valor de referência SÓ quando o movimento é detetado ou fixado
+    if (g_adc_fix_state != 2) {
+        g_adc_old_reading = g_adc_avg;
+    }
+    return g_adc_avg;
+}
+uint16_t map_to_user_lux(uint16_t adc_values){
+    uint32_t temp_val = (uint32_t)adc_values * 20;
+    uint16_t _50_lux = temp_val / 1023;
+    return _50_lux * 50;
+}
 // --- I2C Functions ---
 void inic_i2c(void){
    TWCR |= (1<< TWEN); 
@@ -129,7 +243,9 @@ void inic_i2c(void){
 
 void i2c_start(void){
    TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
-   while (!(TWCR & (1 << TWINT)));
+   uint16_t timeout = 0;
+//* O I2C é síncrono, mas o timeout evita bloqueio eterno em caso de falha de hardware.
+     while (!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) { timeout++; }
 }
 
 void i2c_stop(void) {
@@ -139,18 +255,21 @@ void i2c_stop(void) {
 void i2c_write(uint8_t data) {
    TWDR = data;
    TWCR = (1 << TWINT) | (1 << TWEN);
-   while (!(TWCR & (1 << TWINT)));
+   uint16_t timeout = 0;
+   while (!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) { timeout++; }
 }
 
 uint8_t i2c_read_ack(void) {
    TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
-   while (!(TWCR & (1 << TWINT)));
+   uint16_t timeout = 0;
+   while (!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) { timeout++; }
    return TWDR;
 }
 
 uint8_t i2c_read_nack(void) {
    TWCR = (1 << TWINT) | (1 << TWEN);
-   while (!(TWCR & (1 << TWINT)));
+   uint16_t timeout = 0;
+   while (!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) { timeout++; }
    return TWDR;
 }
 
@@ -178,11 +297,10 @@ void lcd_write_nibble(uint8_t nibble, uint8_t rs) {
 
    // EN high
    i2c_lcd_send(data | PCF_EN);
-   delay_us(200); 
-
+    delay_us(200);
    // EN low
    i2c_lcd_send(data & ~PCF_EN);
-   delay_us(200);
+    delay_us(200);
 }
 
 void lcd_write_byte(uint8_t data, uint8_t rs) {
@@ -307,12 +425,34 @@ void button_inic(void){
    PCICR |= (1 << PCIE1);
    PCMSK1 |= (1 << PCINT9);
 }
+void control_motor(Servo_pos pos_desejada){
+    uint16_t valor_pwm;
+    switch (pos_desejada){
+        case FECHADA:
+            valor_pwm = 125;
+            g_estado_atual = 0; 
+            break;
+        
+        case METADE:
+            valor_pwm = 188;
+            g_estado_atual = 1;
+            break;
+        
+        case ABERTA:
+            valor_pwm = 250;
+            g_estado_atual = 2;
+            break;
+        
+    }
+OCR1A = valor_pwm;
+}
 // --- FUNÇÃO DE INICIALIZAÇÃO DE HARDWARE (Rápida) ---
 void inic(void) {
-   onda1Hz_init();
-   button_inic();
-   // pwm_Servo_init(); // Manter ou remover conforme o necessário
-   sei(); // LIGA INTERRUPÇÕES
+ onda1Hz_init(); 
+ pwm_Servo_init();
+inic_adc();
+button_inic(); 
+sei(); 
 }
 
 // --- MÁQUINA DE ESTADOS PRINCIPAL (NON-BLOCKING) ---
@@ -359,7 +499,7 @@ void inic_non_blocking(void) {
                 lcd_init_setup_cmds(); // Comandos finais: Function Set, Display On, Clear, Entry Mode
                 
                 lcd_set_cursor(0, 0);
-                lcd_write_string("Lux Meter V2.0");
+                lcd_write_string("Projeto LABSI");
                 START_NB_DELAY_MS(1500); // Espera 1.5s
                 g_init_state = 5;
             }
@@ -379,9 +519,12 @@ void inic_non_blocking(void) {
         case 6:
             if (IS_DELAY_FINISHED() == 1) {
                 lcd_set_cursor(0, 0);
-                if (g_sensor_count == 0) lcd_write_string("No Sensor");
-                else if (g_sensor_count == 1) lcd_write_string("1 Sensor Ready");
-                else lcd_write_string("2 Sensors Ready");
+                if (g_sensor_count == 0) lcd_write_string("Sem Sensores");
+                else if (g_sensor_count == 1) lcd_write_string("1 Sensor Pronto");
+                else{lcd_write_string("2 Sensores");
+                    lcd_set_cursor(1, 0);
+                    lcd_write_string("Prontos");
+                } 
                 
                 START_NB_DELAY_MS(1500); // Espera 1.5s
                 g_init_state = 7;
@@ -399,7 +542,6 @@ void inic_non_blocking(void) {
     }
 }
 
-
 // --- LOOP PRINCIPAL ---
 int main(void) {
    inic();
@@ -416,20 +558,32 @@ int main(void) {
         else {
             if (g_flag_2ms) {
                g_flag_2ms = 0;
- 
+
+               uint16_t pot_result = ler_adc_non_blocking();
+                if (pot_result != 0) {
+                    
+                    g_current_pot_value = pot_result;
+                    if (g_operating_mode == MODE_AUTOMATIC) {
+                        blocked_setpoint(g_current_pot_value);
+                    }
+                }
+
                // Atualização do Display/Leitura de Sensor a cada 200ms (100 * 2ms)
                if (g_display_counter >= 100) { 
                g_display_counter = 0;
-
+              uint16_t setpoint_a_mostrar = g_target_lux;
                g_lux_value = bh1750_read_sensors();
                g_averaged_lux = average_lux(g_lux_value);
-
+               if (g_adc_fix_state == 1 || g_adc_fix_state == 2) {
+               setpoint_a_mostrar = map_to_user_lux(g_adc_avg); 
+}
+               sprintf(buffer, "MODO:%s SET:%4u", 
+               (g_operating_mode == MODE_AUTOMATIC) ? "A" : "M" , setpoint_a_mostrar); 
                lcd_set_cursor(0, 0);
-               sprintf(buffer, "Lux: %4u  ", g_averaged_lux);
                lcd_write_string(buffer);
 
+               sprintf(buffer, "Lux:%5u Pers:%d", g_averaged_lux, g_estado_atual);
                lcd_set_cursor(1, 0);
-               sprintf(buffer, "Sensors: %d", g_sensor_count);
                lcd_write_string(buffer);
                }
             }

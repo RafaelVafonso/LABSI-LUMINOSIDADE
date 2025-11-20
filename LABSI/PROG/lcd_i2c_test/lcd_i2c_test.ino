@@ -31,7 +31,20 @@
     uint8_t buffer_index = 0;
     uint16_t averaged_lux = 0;
 
-    // --- Utility Delays ---
+    //Controlo Motor
+    typedef enum{
+        FECHADA = 0,
+        METADE = 1,
+        ABERTA = 2,
+        LUZ = 3
+    }Servo_pos;
+
+    uint8_t g_estado_atual;
+    Servo_pos pos_desejada;
+    void control_motor(Servo_pos pos_desejada);
+
+
+    // --- Delays ---
     void short_delay(void) {  // ~1 us
         __asm__ volatile (
             "nop\n\t" "nop\n\t" "nop\n\t" "nop\n\t"
@@ -89,22 +102,21 @@
     void lcd_write_nibble(uint8_t nibble, uint8_t rs) {
         uint8_t data = 0;
 
-        
         if (nibble & 0b1000) data |= (1 << 0); // D7 -> P7
         if (nibble & 0b0100) data |= (1 << 1); // D6 -> P6
         if (nibble & 0b0010) data |= (1 << 2); // D5 -> P5
         if (nibble & 0b0001) data |= (1 << 3); // D4 -> P4
 
         if (rs) {
-            data |= PCF_RS; // RS -> P0
+            data |= PCF_RS;
         }
 
         // EN high
-        i2c_lcd_send(data | PCF_EN);  // Set EN (P1)
+        i2c_lcd_send(data | PCF_EN);  // Set EN
         delay_us(200);
 
         // EN low
-        i2c_lcd_send(data & ~PCF_EN);  // Clear EN (P1)
+        i2c_lcd_send(data & ~PCF_EN);  // Clear EN
         delay_us(200);
     }
 
@@ -113,9 +125,9 @@
         lcd_write_nibble(data & 0b00001111, rs);  // Low bits
 
         if (rs) {
-            delay_us(100);  // Data write delay
+            delay_us(100);  // Data write delay - do datasheet
         } else {
-            delay_ms(2);    // Command delay
+            delay_ms(2);    // Command delay - do datasheet
         }
     }
 
@@ -141,15 +153,15 @@
     }
 
     void lcd_init(void) {
-        delay_ms(50);  // Power-on wait
+        delay_ms(50);  // Power-on delay
         
-        // 4-bit init sequence (send as commands, rs=0)
+        // 4-bit init sequence (commands, rs=0) - do datasheet
         lcd_write_nibble(0x03, 0); delay_ms(5);
         lcd_write_nibble(0x03, 0); delay_us(100);
         lcd_write_nibble(0x03, 0); delay_us(100);
         lcd_write_nibble(0x02, 0); delay_us(100);  // 4-bit mode
         
-        lcd_write_byte(0b00101000, 0);  // Function set: 4-bit, 2 lines, 5x8 dots
+        lcd_write_byte(0b00101000, 0);  // Function set: 4-bit, 2 lines, 5x8 dots 
         lcd_write_byte(0b00001100, 0);  // Display on, cursor off, blink off
         lcd_write_byte(0b00000001, 0);  // Clear Display
         delay_ms(2);
@@ -210,7 +222,7 @@
                 return 0;            
             }
         i2c_stop();
-        return 1; // assume success
+        return 1;
     }
 
     uint16_t bh1750_read(uint8_t addr){
@@ -275,7 +287,31 @@
         OCR1A = 188;
     }
 
-    // --- Timer 0 for 2ms interrupt ---
+    void control_motor(Servo_pos pos_desejada){
+        uint16_t valor_pwm;
+
+        switch (pos_desejada){
+
+            case FECHADA:
+                valor_pwm = 125;
+                g_estado_atual = 0; 
+                break;
+            
+            case METADE:
+                valor_pwm = 188;
+                g_estado_atual = 1;
+                break;
+            
+            case ABERTA:
+                valor_pwm = 250;
+                g_estado_atual = 2;
+                break;
+            
+        }
+    OCR1A = valor_pwm;
+    }
+
+    // --- Timer 0 2ms  ---
     void onda1Hz_init(void) {
         DDRD |= (1 << PD6);
         PORTD &= ~(1 << PD6);
@@ -283,7 +319,6 @@
         TCCR0B = (1 << CS02) | (1 << CS00);
         OCR0A = 31;
         TIMSK0 = (1 << OCIE0A);
-        sei();
     }
 
     void inic(void) {
@@ -292,7 +327,7 @@
         lcd_init();
         lcd_clear();
         lcd_set_cursor(0, 0);
-        lcd_write_string("Lux Meter V1.0");
+        lcd_write_string("PROJETO LABSI");
         delay_ms(1500);
         lcd_clear();
         bh1750_init();
@@ -301,14 +336,17 @@
             lcd_write_string("No Sensor");
             delay_ms(1500);
         } else if (sensor_count == 1) {
-            lcd_write_string("1 Sensor Ready");
+            lcd_write_string("1 Sensor Detetado");
             delay_ms(1500);
         } else {
-            lcd_write_string("2 Sensors Ready");
+            lcd_write_string("2 Sensores Detetados");
             delay_ms(1500);
         }
         delay_ms(1500);
         lcd_clear();
+        lcd_write_string("A inicializar...");
+        delay_ms(3000);
+        sei();
     }
 
     int main(void) {
