@@ -19,12 +19,20 @@
 #define MODE_MANUAL 1
 
 #define BOTAO_TOUCH PC1
+#define BOTAO_MAIS PD4 // Botão Aumentar (PD4)
+#define BOTAO_MENOS PD7 // Botão Diminuir (PD7)
+#define BUZZER_PIN PC0 // Buzzer (PC0)
 
-#define ADC_POT 0 //ADC0 (PC0)
+#define LUX_STEP 50 // Passo de ajuste
+#define LUX_MAX 1000 
+#define LUX_MIN 0
+#define LUX_BAND_ERROR 15
+
+
+#define FIX_TIME_TICKS 1500// 2.0s / 2ms = 1000 ticks
+#define DEBOUNCE_TICKS 15  // 20ms de de
+
 #define I2C_TIMEOUT_CYCLES 20000
-
-#define ADC_THRESHOLD 10 // Tolerância
-#define FIX_TIME_TICKS 50// 3.0s / 2ms = 1500 ticks
 
 // --- VARIÁVEIS DE CONTROLO DE TEMPO E ESTADO ---
 volatile uint16_t g_delay_counter_2ms = 0; // Contador principal, decrementa a cada 2ms
@@ -34,15 +42,18 @@ volatile uint8_t g_operating_mode = MODE_AUTOMATIC;
 volatile uint8_t g_mode_changed = 1;      // Flag para limpar LCD
 volatile uint8_t g_prev_pc1_state = 0;    // Para detetar a borda do botão
 volatile uint8_t g_mode_locked = 0;       // Bloqueio após 1º toque
-volatile uint16_t g_target_lux = 0;     
-volatile uint16_t g_current_pot_value = 0; // Valor lido do Potenciómetro
-volatile uint8_t g_adc_in_progress = 0; // Flag para ADC non-blocking
+volatile uint16_t g_target_lux = 150;     
 volatile uint8_t g_contador = 0;
 volatile char g_flag_2ms = 0;
 volatile uint8_t g_display_counter = 0;
-volatile uint16_t g_adc_old_reading = 0; // Leitura da última média (para comparação)
-volatile uint8_t g_adc_fix_state = 0;// 0: Estável, 1: A Mover, 2: Aguardar Fixação (3s)
-volatile uint16_t g_adc_fix_timer = 0;// Contador descendente para 3 segundos
+
+volatile uint16_t g_last_setpoint_value = 150; // Valor a ser ajustado (Preview)
+volatile uint8_t g_up_debounce = 0; 
+volatile uint8_t g_down_debounce = 0; 
+volatile uint8_t g_buzzer_counter = 0;
+
+volatile uint8_t g_fix_state = 0; // 0: Estável, 1: Ajuste Ativo, 2: Contagem (2s)
+volatile uint16_t g_fix_timer = 0; // Timer de 2 segundos
 
 uint16_t g_lux_value = 0;
 uint16_t g_servo_pwm_value = 188;
@@ -55,10 +66,6 @@ uint8_t g_sensor2_present = 0;
 uint16_t lux_buffer[AVG_SAMPLES] = {0};
 uint8_t g_buffer_index = 0;
 uint16_t g_averaged_lux = 0;
-
-uint16_t adc_buffer[AVG_SAMPLES] = {0};
-uint8_t g_adc_buffer_index;
-uint16_t g_adc_avg;
 
 
 //Controlo Motor
@@ -102,6 +109,12 @@ uint8_t IS_DELAY_FINISHED() {
    else return 0;
 }
 
+void buzzer_bips(uint8_t num_bips) {
+    if (g_buzzer_counter == 0) {
+        // Cada bip dura 400ms (200 ticks * 2ms)
+        g_buzzer_counter = num_bips * 200; 
+    }
+}
 // --- Timer ISR (runs every 2ms) ---
 ISR(TIMER0_COMPA_vect){
    g_flag_2ms = 1;
@@ -109,8 +122,17 @@ ISR(TIMER0_COMPA_vect){
    if (g_delay_counter_2ms > 0) {
         g_delay_counter_2ms--;
     }
-    if (g_adc_fix_state == 2 && g_adc_fix_timer > 0) {
-        g_adc_fix_timer--;
+    if (g_delay_counter_2ms > 0) { g_delay_counter_2ms--; }
+    if (g_fix_state == 2 && g_fix_timer > 0) { g_fix_timer--; } // Timer de Fixação
+    // Controlo do Buzzer
+    if (g_buzzer_counter > 0) {
+        g_buzzer_counter--;
+        // Alterna o Buzzer (PC0) a cada 50ms (25 ticks)
+        if (g_buzzer_counter % 25 == 0) {
+            PORTC ^= (1 << BUZZER_PIN);
+        }
+    } else {
+        PORTC &= ~(1 << BUZZER_PIN); // Desliga o Buzzer
     }
    g_contador++;
    if (g_contador >= 250) { 
@@ -135,6 +157,7 @@ ISR(PCINT1_vect) {
                 g_operating_mode = MODE_AUTOMATIC;
             }
             g_mode_changed = 1; // Sinalizar ao main loop
+            buzzer_bips(1); // 1 bip na troca de modo
             g_mode_locked = 1;  // Bloquear mais mudanças
         }
     } 
@@ -157,80 +180,98 @@ void inic_adc(void) {
     // 3. Desliga Buffer Digital em PC0 para poupar energia
     DIDR0 = (1 << ADC0D); 
 }
-uint16_t ler_adc_non_blocking(void) {
-    if (g_adc_in_progress == 0) {
 
-        ADMUX = (ADMUX & 0xF0) | ADC_POT; 
-        ADCSRA |= (1 << ADSC); 
-        g_adc_in_progress = 1;
-        return 0; // Conversão iniciada
-    } else {
-        // 2. conversão terminou (ADIF = 1)
-        if (ADCSRA & (1 << ADIF)) {
-            ADCSRA |= (1 << ADIF); // Limpa a flag (escreve 1)
-            g_adc_in_progress = 0;
-            
-            return ADC; 
-        }
-        return 0; // Conversão ainda em curso
-    }
-}
-
-uint16_t blocked_setpoint(uint16_t new_reading){
-   uint32_t sum = 0;
-   sum -= adc_buffer[g_adc_buffer_index];
-   adc_buffer[g_adc_buffer_index] = new_reading;
-   g_adc_buffer_index = (g_adc_buffer_index + 1) % AVG_SAMPLES;
- 
-
-   for (uint8_t i = 0; i < AVG_SAMPLES; i++) {
-   sum += adc_buffer[i];
-   }
-   g_adc_avg = sum / AVG_SAMPLES;
-    uint16_t variation = abs((int16_t)g_adc_avg - (int16_t)g_adc_old_reading);
-    switch (g_adc_fix_state) {
-        
-        case 0: // ESTADO ESTÁVEL
-            if (variation > ADC_THRESHOLD) {
-                // Movimento detectado
-                g_adc_fix_state = 1; // Transição para: A MOVER
-            }
-            break;
-        case 1: // ESTADO A MOVER 
-            if (variation <= ADC_THRESHOLD) {
-                // Potenciómetro parou de se mover. Inicia contagem de 3s.
-                g_adc_fix_timer = FIX_TIME_TICKS; // Reset ao contador de 3s
-                g_adc_fix_state = 2;
-            } else {
-                // Continua a mover, atualiza o valor de referência para a próxima verificação
-                g_adc_old_reading = g_adc_avg; 
-            }
-            break;
-        case 2: // ESTADO AGUARDAR FIXAÇÃO
-            if (variation > ADC_THRESHOLD) {
-                // Movimento reiniciado antes de 3s terminarem.
-                g_adc_fix_state = 1; // Volta para: A MOVER
-            } else {
-                // Se o Timer (que é decrementado pelo ISR de 2ms) atingir 0
-                if (g_adc_fix_timer == 0) {
-                    // FIXAÇÃO COMPLETA
-                    g_target_lux = map_to_user_lux(g_adc_avg);
-                    g_adc_fix_state = 0;
+// --- LÓGICA DE CONTROLO DE SETPOINT (+/-) ---
+void adjust_setpoint_control(void) {
+    const uint8_t DEBOUNCE_DELAY = 10; // 20ms
+    
+    // 1. Botão UP (Aumentar)
+    if (!(PIND & (1 << BOTAO_MAIS))) { 
+        if (g_up_debounce == 0) { g_up_debounce = DEBOUNCE_DELAY; } 
+        else if (g_up_debounce == 1) { 
+            if (g_fix_state != 2) { // Só permite ajuste se não estiver já ativo/a mover
+                if (g_last_setpoint_value < LUX_MAX) {
+                    g_last_setpoint_value += LUX_STEP;
+                    if (g_last_setpoint_value > LUX_MAX) g_last_setpoint_value = LUX_MAX;
                 }
+                if(g_fix_state == 0) {g_fix_state = 1;} // Transiciona para AJUSTE ATIVO
             }
-            break;
-    }
+            g_up_debounce = 0; // Reset para um único toque
+        }
+    } else { g_up_debounce = 0; }
 
-    // Atualiza o valor de referência SÓ quando o movimento é detetado ou fixado
-    if (g_adc_fix_state != 2) {
-        g_adc_old_reading = g_adc_avg;
+    // 2. Botão DOWN (Diminuir)
+    if (!(PIND & (1 << BOTAO_MENOS))) { 
+        if (g_down_debounce == 0) { g_down_debounce = DEBOUNCE_DELAY; } 
+        else if (g_down_debounce == 1) {
+            if (g_fix_state != 2) {
+                if (g_last_setpoint_value > LUX_MIN) {
+                    g_last_setpoint_value -= LUX_STEP;
+                    if (g_last_setpoint_value < LUX_MIN) g_last_setpoint_value = LUX_MIN;
+                }
+                if(g_fix_state == 0) {g_fix_state = 1;} // Transiciona para AJUSTE ATIVO
+            }
+            g_down_debounce = 0;
+        }
+    } else { g_down_debounce = 0; }
+    
+    // 3. Lógica de Debounce (Decrementa)
+    if (g_up_debounce > 0) g_up_debounce--;
+    if (g_down_debounce > 0) g_down_debounce--;
+    
+    
+    // 4. MÁQUINA DE ESTADOS DE FIXAÇÃO (Contagem de 2 Segundos)
+    
+    if (g_fix_state == 1) { 
+        // AJUSTE ATIVO -> Verifica estabilidade (se ambos os botões estiverem liberados)
+        if ((PIND & (1 << BOTAO_MAIS)) && (PIND & (1 << BOTAO_MENOS))) {
+            // Botões estão liberados: Inicia contagem de 2s
+            g_fix_timer = FIX_TIME_TICKS; 
+            g_fix_state = 2; 
+        }
+    } 
+    
+    else if (g_fix_state == 2) {
+        // CONTAGEM (2s)
+        // Se um botão for pressionado durante a contagem, ele reinicia o ajuste (Estado 1)
+        if (!(PIND & (1 << BOTAO_MAIS)) || !(PIND & (1 << BOTAO_MENOS))) {
+             g_fix_state = 1; 
+        } else if (g_fix_timer == 0) {
+            // FIXAÇÃO CONCLUÍDA
+            g_target_lux = g_last_setpoint_value; // Fixa o valor
+            buzzer_bips(2); // 2 bips para sinalizar bloqueio
+            g_fix_state = 0; // Volta a Estável
+        }
     }
-    return g_adc_avg;
 }
-uint16_t map_to_user_lux(uint16_t adc_values){
-    uint32_t temp_val = (uint32_t)adc_values * 20;
-    uint16_t _50_lux = temp_val / 1023;
-    return _50_lux * 50;
+
+void servo_control_automatic(void) {
+    int16_t error = (int16_t)g_target_lux - (int16_t)g_averaged_lux;
+    
+    // Se o sistema ainda está a inicializar o BH1750, não atuar
+    if (g_sensor_count == 0 || g_init_state != 255) return;
+
+    if (abs(error) <= LUX_BAND_ERROR) {
+        // Zona 1: Dentro da banda de erro (ex: ±10 Lux). Manter posição.
+        return;
+    } 
+    else if (error > LUX_BAND_ERROR) { 
+        // Zona 2: Erro positivo (Target > Actual Lux). MUITO ESCURO. Abrir.
+        
+        if (g_estado_atual < ABERTA) {
+            // Se não estiver totalmente aberto, tenta mover para a próxima posição (METADE ou ABERTA)
+            control_motor(2);
+
+        }
+    } 
+    else { 
+        // Zona 3: Erro negativo (Target < Actual Lux). MUITO CLARO. Fechar.
+        
+        if (g_estado_atual > FECHADA) {
+            // Se não estiver totalmente fechado, tenta mover para a próxima posição (METADE ou FECHADA)
+            control_motor(0);
+        }
+    }
 }
 // --- I2C Functions ---
 void inic_i2c(void){
@@ -419,11 +460,19 @@ void pwm_Servo_init(void){
    ICR1 = 2500;
    OCR1A = 188;
 }
-void button_inic(void){
+void buttons_inic(void){
    DDRC &= ~(1 << BOTAO_TOUCH);
    PORTC &= ~(1 << PC1);
    PCICR |= (1 << PCIE1);
    PCMSK1 |= (1 << PCINT9);
+
+   // BOTÕES +/- (PD4, PD7) INPUT com Pull-ups
+DDRD &= ~((1 << BOTAO_MAIS) | (1 << BOTAO_MENOS));
+PORTD |= (1 << BOTAO_MAIS) | (1 << BOTAO_MENOS); 
+
+// PINO BUZZER (PC0) como OUTPUT
+DDRC |= (1 << BUZZER_PIN); 
+PORTC &= ~(1 << BUZZER_PIN); // Desligado
 }
 void control_motor(Servo_pos pos_desejada){
     uint16_t valor_pwm;
@@ -451,7 +500,7 @@ void inic(void) {
  onda1Hz_init(); 
  pwm_Servo_init();
 inic_adc();
-button_inic(); 
+buttons_inic(); 
 sei(); 
 }
 
@@ -556,38 +605,52 @@ int main(void) {
         
         // 2. CÓDIGO OPERACIONAL PRINCIPAL (SÓ EXECUTA APÓS SETUP)
         else {
-            if (g_flag_2ms) {
-               g_flag_2ms = 0;
+             if (g_flag_2ms) {
+                g_flag_2ms = 0;
 
-               uint16_t pot_result = ler_adc_non_blocking();
-                if (pot_result != 0) {
+                // 1. LEITURA DE LUX e MÉDIA (a cada 2ms)
+                g_lux_value = bh1750_read_sensors();
+                g_averaged_lux = average_lux(g_lux_value);
+
+
+                // 2. CONTROLO E AJUSTE DE SETPOINT (a cada 2ms)
+                if (g_operating_mode == MODE_MANUAL) {
                     
-                    g_current_pot_value = pot_result;
-                    if (g_operating_mode == MODE_AUTOMATIC) {
-                        blocked_setpoint(g_current_pot_value);
-                    }
+                } else {
+                    // MODO AUTOMÁTICO: Reseta os debouncers
+
                 }
 
-               // Atualização do Display/Leitura de Sensor a cada 200ms (100 * 2ms)
-               if (g_display_counter >= 100) { 
-               g_display_counter = 0;
-              uint16_t setpoint_a_mostrar = g_target_lux;
-               g_lux_value = bh1750_read_sensors();
-               g_averaged_lux = average_lux(g_lux_value);
-               if (g_adc_fix_state == 1 || g_adc_fix_state == 2) {
-               setpoint_a_mostrar = map_to_user_lux(g_adc_avg); 
-}
-               sprintf(buffer, "MODO:%s SET:%4u", 
-               (g_operating_mode == MODE_AUTOMATIC) ? "A" : "M" , setpoint_a_mostrar); 
-               lcd_set_cursor(0, 0);
-               lcd_write_string(buffer);
+                // --- 3. LÓGICA DE CONTROLO DE LUZ (A IMPLEMENTAR) ---
+                if (g_operating_mode == MODE_AUTOMATIC) {
+                    adjust_setpoint_control();
+                    servo_control_automatic();
+                } else {
+                    g_up_debounce = 0;
+                    g_down_debounce = 0;
+                }
 
-               sprintf(buffer, "Lux:%5u Pers:%d", g_averaged_lux, g_estado_atual);
-               lcd_set_cursor(1, 0);
-               lcd_write_string(buffer);
-               }
-            }
+                // 4. ATUALIZAÇÃO DO DISPLAY (200ms)
+                if (g_display_counter >= 100) { 
+                g_display_counter = 0;
+
+                // Define valor de display (Preview vs Fixo)
+                uint16_t display_setpoint = g_target_lux;
+                if (g_fix_state != 0) {
+                    display_setpoint = g_last_setpoint_value;
+                }
+                
+                sprintf(buffer, "MODO:%s SET:%4u", 
+                (g_operating_mode == MODE_AUTOMATIC) ? "A" : "M" , display_setpoint); 
+                lcd_set_cursor(0, 0);
+                lcd_write_string(buffer);
+
+                sprintf(buffer, "Lux:%5u Pers:%d", g_averaged_lux, g_estado_atual); 
+                lcd_set_cursor(1, 0);
+                lcd_write_string(buffer);
+                }
+             }
         }
-   }
-   return 0;
+    }
+return 0;
 }

@@ -451,7 +451,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "Controlo_Luminosidade_LCDI2C.kicad_pro",
+    "filename": "Projeto_LuminosidadeV1.0.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -479,26 +479,7 @@
       "version": 4
     },
     "net_colors": null,
-    "netclass_assignments": {
-      "Net-(D1-A)": [
-        "Signal"
-      ],
-      "Net-(D1-K)": [
-        "Signal"
-      ],
-      "Net-(Q1-D)": [
-        "Power"
-      ],
-      "Net-(U1-AREF)": [
-        "Signal"
-      ],
-      "Net-(U2-A)": [
-        "Signal"
-      ],
-      "Net-(U2-VO)": [
-        "Signal"
-      ]
-    },
+    "netclass_assignments": null,
     "netclass_patterns": []
   },
   "pcbnew": {
