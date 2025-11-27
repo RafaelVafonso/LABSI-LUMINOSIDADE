@@ -21,12 +21,12 @@
 #define BOTAO_MAIS PD4 // Botão Aumentar
 #define BOTAO_MENOS PD7 // Botão Diminuir
 #define BUZZER_PIN PC0 // Buzzer (PC0)
-// Sonars (HC-SR04)
+
 #define SONAR1_TRIG PD0
 #define SONAR1_ECHO PD2
 #define SONAR2_TRIG PD1
 #define SONAR2_ECHO PD3
-// 20 cm ~ 1160 us de echo -> com Timer1 a 4 us/tick => ~290 ticks
+// 20 cm ~ 1156 us de echo -> com Timer1 a 4 us/tick => ~290 ticks
 #define SONAR_THRESHOLD_TICKS_20CM 300
 #define LUX_STEP 50
 #define LUX_MAX 1000
@@ -34,8 +34,8 @@
 #define LUX_BAND_ERROR 30
 #define I2C_TIMEOUT_CYCLES 20000
 #define FIX_TIME_TICKS 20
-// Tempo máximo para completar um gesto (ex: 500 ms = 250 ticks de 2ms)
-#define GESTURE_TIMEOUT_TICKS 250
+
+#define GESTURE_TIMEOUT_TICKS 500
 // --- VARIÁVEIS DE CONTROLO DE TEMPO E ESTADO ---
 volatile uint16_t g_delay_counter_2ms = 0; // Contador principal, decrementa a cada 2ms
 volatile uint8_t g_init_state = 0; // Máquina de estados para inicialização
@@ -55,6 +55,7 @@ volatile uint16_t g_fix_timer = 0; // Timer de 2 segundos
 // Gesto com sonares (modo manual)
 volatile uint8_t g_gesture_state = 0; // 0: idle, 1: S1 primeiro, 2: S2 primeiro
 volatile uint16_t g_gesture_timer = 0; // timeout do gesto
+
 uint8_t g_up_debounce = 0;
 uint8_t g_down_debounce = 0;
 uint16_t g_lux_value = 0;
@@ -77,8 +78,9 @@ typedef enum {
 Servo_pos;
 uint8_t g_estado_atual;
 Servo_pos pos_desejada;
+
 void control_motor(Servo_pos pos_desejada);
-// Prototipos sonar / gestos
+
 uint8_t sonar_is_close(uint8_t sonar_id);
 void update_manual_gestures(void);
 // --- FUNÇÕES DE ATRASO CRÍTICO (us) ---
@@ -150,6 +152,7 @@ ISR(TIMER0_COMPA_vect) {
 		g_contador = 0;
 	}
 	g_display_counter++;
+
 }
 ISR(PCINT1_vect) {
 	uint8_t current_state = PINC & (1 << PC1);
@@ -164,7 +167,7 @@ ISR(PCINT1_vect) {
 			}
 			g_mode_changed = 1; // Sinalizar ao main loop
 			control_motor(1);
-			buzzer_bips(1); // 1 bip na troca de modo
+			//buzzer_bips(1); // 1 bip na troca de modo
 			g_mode_locked = 1; // Bloquear mais mudanças
 		}
 	} else if(current_state < g_prev_pc1_state) {
@@ -228,7 +231,7 @@ void adjust_setpoint_control(void) {
 		// CONTAGEM (2s)
 		if(g_fix_timer == 0) {
 			g_target_lux = g_last_setpoint_value; // Fixa o valor
-			buzzer_bips(2); // 2 bips para sinalizar bloqueio
+			//buzzer_bips(2); // 2 bips para sinalizar bloqueio
 			g_fix_state = 0; // Volta a Estável
 		}
 	}
@@ -416,9 +419,9 @@ void onda1Hz_init(void) {
 }
 void pwm_Servo_init(void) {
 	DDRB |= (1 << PB1);
-	TCCR1A |= (1 << COM1A1) | (1 << WGM11);
-	TCCR1B |= (1 << WGM13) | (1 << CS11) | (1 << CS10); // prescaler 64
-	ICR1 = 5000; // 20 ms (50 Hz), 4 us por tick
+	TCCR1A |= (1 << COM1A1) | (1 << WGM11);//PC
+	TCCR1B |= (1 << WGM13) | (1 << CS11) | (1 << CS10) | (1 << ICNC1); // prescaler 64, noise cancelling
+	ICR1 = 2500; // 20 ms (50 Hz)
 	OCR1A = 188;
 }
 void buttons_inic(void) {
@@ -457,10 +460,13 @@ void control_motor(Servo_pos pos_desejada) {
 	}
 	OCR1A = valor_pwm;
 }
-// --- FUNÇÃO SONAR: verifica se há objeto < ~20 cm ---
+// verifica se há objeto < ~20 cm ---
 uint8_t sonar_is_close(uint8_t sonar_id) {
 	uint8_t trig_pin;
 	uint8_t echo_pin;
+	DDRD |= (1 << trig_pin);
+  DDRD &= ~(1 << echo_pin);
+
 	if(sonar_id == 1) {
 		trig_pin = SONAR1_TRIG;
 		echo_pin = SONAR1_ECHO;
@@ -518,7 +524,7 @@ void update_manual_gestures(void) {
 	// Estados:
 	// 0: idle, 1: S1 primeiro, 2: S2 primeiro
 	if(g_gesture_state == 0) {
-		// Procura primeira ativação (flanco de subida)
+		// Procura primeira ativação
 		if(s1 && !s1_prev) {
 			g_gesture_state = 1; // S1 primeiro (de baixo para cima)
 			g_gesture_timer = GESTURE_TIMEOUT_TICKS;
@@ -531,7 +537,6 @@ void update_manual_gestures(void) {
 		if(s2) {
 			// Gesto de BAIXO para CIMA -> ABRIR
 			control_motor(ABRIR);
-			//buzzer_bips(1);
 			g_gesture_state = 0;
 			g_gesture_timer = 0;
 		}
@@ -540,7 +545,6 @@ void update_manual_gestures(void) {
 		if(s1) {
 			// Gesto de CIMA para BAIXO -> FECHAR
 			control_motor(FECHAR);
-			//buzzer_bips(1);
 			g_gesture_state = 0;
 			g_gesture_timer = 0;
 		}
@@ -650,10 +654,10 @@ int main(void) {
 				} else {
 					// MODO MANUAL: reconhecimento de gestos com sonares
 					sonar_tick++;
-					if(sonar_tick >= 10) { // ~20 ms
-						sonar_tick = 0;
-						update_manual_gestures();
-					}
+						if(sonar_tick >= 25) { // ~50 ms
+							sonar_tick = 0;
+							update_manual_gestures();
+						}
 				}
 				// Estado do motor para debug em LCD
 				char motor_status = 'E';
