@@ -33,9 +33,12 @@
 #define LUX_MIN 0
 #define LUX_BAND_ERROR 30
 #define I2C_TIMEOUT_CYCLES 20000
-#define FIX_TIME_TICKS 20
+#define FIX_TIME_TICKS 1000
 
 #define GESTURE_TIMEOUT_TICKS 500
+
+#define GATE_PIN PB3
+#define MAX_LED_PWM 255
 // --- VARIÁVEIS DE CONTROLO DE TEMPO E ESTADO ---
 volatile uint16_t g_delay_counter_2ms = 0; // Contador principal, decrementa a cada 2ms
 volatile uint8_t g_init_state = 0; // Máquina de estados para inicialização
@@ -47,6 +50,8 @@ volatile uint8_t g_mode_locked = 0; // Bloqueio após 1º toque
 volatile uint16_t g_target_lux = 150;
 volatile uint8_t g_contador = 0;
 volatile char g_flag_2ms = 0;
+volatile uint16_t g_2s_counter = 0;
+volatile char g_2s_flag = 0;
 volatile uint8_t g_display_counter = 0;
 volatile uint16_t g_last_setpoint_value = 150;
 volatile uint8_t g_buzzer_counter = 0;
@@ -59,7 +64,10 @@ volatile uint16_t g_gesture_timer = 0; // timeout do gesto
 uint8_t g_up_debounce = 0;
 uint8_t g_down_debounce = 0;
 uint16_t g_lux_value = 0;
+
 uint16_t g_servo_pwm_value = 188;
+uint8_t g_led_brightness = 0;
+
 uint8_t g_sensor_count = 0;
 uint8_t g_sensor1_present = 0;
 uint8_t g_sensor2_present = 0;
@@ -126,6 +134,11 @@ void buzzer_bips(uint8_t num_bips) {
 // --- Timer ISR (2ms) ---
 ISR(TIMER0_COMPA_vect) {
 	g_flag_2ms = 1;
+	g_2s_counter++;
+	if(g_2s_counter > 1500){
+		g_2s_counter = 0;
+		g_2s_flag = 1;
+	}
 	if(g_delay_counter_2ms > 0) {
 		g_delay_counter_2ms--;
 	}
@@ -167,7 +180,7 @@ ISR(PCINT1_vect) {
 			}
 			g_mode_changed = 1; // Sinalizar ao main loop
 			control_motor(1);
-			//buzzer_bips(1); // 1 bip na troca de modo
+			buzzer_bips(1); // 1 bip na troca de modo
 			g_mode_locked = 1; // Bloquear mais mudanças
 		}
 	} else if(current_state < g_prev_pc1_state) {
@@ -231,7 +244,7 @@ void adjust_setpoint_control(void) {
 		// CONTAGEM (2s)
 		if(g_fix_timer == 0) {
 			g_target_lux = g_last_setpoint_value; // Fixa o valor
-			//buzzer_bips(2); // 2 bips para sinalizar bloqueio
+			buzzer_bips(2); // 2 bips para sinalizar bloqueio
 			g_fix_state = 0; // Volta a Estável
 		}
 	}
@@ -246,14 +259,18 @@ void servo_control_automatic(void) {
 	} else if(error > LUX_BAND_ERROR) {
 		// Erro positivo -> abrir
 		if(g_estado_atual < ABRIR) {
-			control_motor(ABRIR);
-		}
+			g_2s_counter = 0;
+			if(g_2s_flag != 1) control_motor(ABRIR);
+			else control_motor(PARAR);
 	} else {
 		// Erro negativo -> fechar
 		if(g_estado_atual > FECHAR) {
-			control_motor(FECHAR);
+			g_2s_counter = 0;
+			if(g_2s_flag !=1 ) control_motor(FECHAR);
+			else control_motor(PARAR);
 		}
-	}
+		}
+		}
 }
 // --- I2C Functions ---
 void inic_i2c(void) {
@@ -417,6 +434,13 @@ void onda1Hz_init(void) {
 	OCR0A = 31; // (16M / 1024) / (31+1) = 500 Hz (2ms)
 	TIMSK0 = (1 << OCIE0A);
 }
+void pwm_led_init(void){
+	DDRB |= (1 << GATE_PIN);
+	PORTB &= ~(1 << GATE_PIN);
+	TCCR2A = (1 << WGM20) | (1 << COM2A1);
+	TCCR2B =  (1 << CS20) | (1 << CS21);
+	OCR2A = 0;
+}
 void pwm_Servo_init(void) {
 	DDRB |= (1 << PB1);
 	TCCR1A |= (1 << COM1A1) | (1 << WGM11);//PC
@@ -459,6 +483,22 @@ void control_motor(Servo_pos pos_desejada) {
 			break;
 	}
 	OCR1A = valor_pwm;
+}
+// Controlo Manual de LED
+void manual_led_control(void) {
+    if (PIND & (1 << BOTAO_MAIS)) {
+        if (g_led_brightness < 255) set_led_brightness(g_led_brightness + 5);
+        else set_led_brightness(255);
+    }
+    if (PIND & (1 << BOTAO_MENOS)) {
+        if (g_led_brightness > 0) set_led_brightness(g_led_brightness - 5);
+        else set_led_brightness(0);
+    }
+}
+void set_led_brightness(uint8_t brightness) {
+    if (brightness > MAX_LED_PWM) brightness = MAX_LED_PWM;
+    OCR2A = brightness;
+    g_led_brightness = brightness;
 }
 // verifica se há objeto < ~20 cm ---
 uint8_t sonar_is_close(uint8_t sonar_id) {
@@ -536,17 +576,23 @@ void update_manual_gestures(void) {
 		// Já detetou S1, agora espera S2
 		if(s2) {
 			// Gesto de BAIXO para CIMA -> ABRIR
-			control_motor(ABRIR);
-			g_gesture_state = 0;
-			g_gesture_timer = 0;
+			g_2s_counter = 0;
+			if(g_2s_flag != 1){
+				control_motor(ABRIR);
+				g_gesture_state = 0;
+				g_gesture_timer = 0;
+			} else control_motor (PARAR);
 		}
 	} else if(g_gesture_state == 2) {
 		// Já detetou S2, agora espera S1
 		if(s1) {
 			// Gesto de CIMA para BAIXO -> FECHAR
-			control_motor(FECHAR);
-			g_gesture_state = 0;
-			g_gesture_timer = 0;
+			g_2s_counter = 0;
+			if(g_2s_flag != 1){
+				control_motor(FECHAR);
+				g_gesture_state = 0;
+				g_gesture_timer = 0;
+				} else control_motor (PARAR);
 		}
 	}
 	s1_prev = s1;
@@ -555,6 +601,7 @@ void update_manual_gestures(void) {
 // --- FUNÇÃO DE INICIALIZAÇÃO DE HARDWARE ---
 void inic(void) {
 	onda1Hz_init();
+	pwm_led_init();
 	pwm_Servo_init();
 	buttons_inic();
 	sei();
@@ -652,7 +699,7 @@ int main(void) {
 					adjust_setpoint_control();
 					servo_control_automatic();
 				} else {
-					// MODO MANUAL: reconhecimento de gestos com sonares
+					manual_led_control();
 					sonar_tick++;
 						if(sonar_tick >= 25) { // ~50 ms
 							sonar_tick = 0;
