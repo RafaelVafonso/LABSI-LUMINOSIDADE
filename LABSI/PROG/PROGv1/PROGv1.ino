@@ -1,9 +1,7 @@
 #include <avr/io.h>
 
 #include <avr/interrupt.h>
-
 #include <stdio.h>
-
 #include <stdlib.h>
 
 #define F_CPU 16000000 UL
@@ -22,9 +20,9 @@
 #define BOTAO_MENOS PD7 // Botão Diminuir
 #define BUZZER_PIN PC0 // Buzzer (PC0)
 
-#define SONAR1_TRIG PD0
+#define SONAR1_TRIG PC2
 #define SONAR1_ECHO PD2
-#define SONAR2_TRIG PD1
+#define SONAR2_TRIG PC3
 #define SONAR2_ECHO PD3
 // 20 cm ~ 1156 us de echo -> com Timer1 a 4 us/tick => ~290 ticks
 #define SONAR_THRESHOLD_TICKS_20CM 300
@@ -34,6 +32,7 @@
 #define LUX_BAND_ERROR 30
 #define I2C_TIMEOUT_CYCLES 20000
 #define FIX_TIME_TICKS 1000
+#define DEBOUNCE_TICKS 10
 
 #define GESTURE_TIMEOUT_TICKS 500
 
@@ -50,10 +49,8 @@ volatile uint8_t g_mode_locked = 0; // Bloqueio após 1º toque
 volatile uint16_t g_target_lux = 150;
 volatile uint8_t g_contador = 0;
 volatile char g_flag_2ms = 0;
-volatile uint16_t g_2s_counter = 0;
-volatile char g_2s_flag = 0;
 volatile uint8_t g_display_counter = 0;
-volatile uint16_t g_last_setpoint_value = 150;
+volatile uint16_t g_last_setpoint_value = 100;
 volatile uint8_t g_buzzer_counter = 0;
 volatile uint8_t g_fix_state = 0; // 0: Estável, 1: Ajuste Ativo, 2: Contagem (2s)
 volatile uint16_t g_fix_timer = 0; // Timer de 2 segundos
@@ -72,9 +69,7 @@ uint8_t g_sensor_count = 0;
 uint8_t g_sensor1_present = 0;
 uint8_t g_sensor2_present = 0;
 #define AVG_SAMPLES 10
-uint16_t lux_buffer[AVG_SAMPLES] = {
-	0
-};
+uint16_t lux_buffer[AVG_SAMPLES] = {0};
 uint8_t g_buffer_index = 0;
 uint16_t g_averaged_lux = 0;
 // Controlo Motor
@@ -134,11 +129,6 @@ void buzzer_bips(uint8_t num_bips) {
 // --- Timer ISR (2ms) ---
 ISR(TIMER0_COMPA_vect) {
 	g_flag_2ms = 1;
-	g_2s_counter++;
-	if(g_2s_counter > 1500){
-		g_2s_counter = 0;
-		g_2s_flag = 1;
-	}
 	if(g_delay_counter_2ms > 0) {
 		g_delay_counter_2ms--;
 	}
@@ -191,84 +181,76 @@ ISR(PCINT1_vect) {
 }
 // --- LÓGICA DE CONTROLO DE SETPOINT (+/-) ---
 void adjust_setpoint_control(void) {
-	const uint8_t DEBOUNCE_DELAY = 10; // 20ms
-	// 1. Botão UP (Aumentar)
-	if((PIND & (1 << BOTAO_MAIS))) {
-		if(g_up_debounce == 0) {
-			g_up_debounce = DEBOUNCE_DELAY;
-		} else if(g_up_debounce == 1) {
-			if(g_fix_state != 2) {
-				if(g_last_setpoint_value < LUX_MAX) {
-					g_last_setpoint_value += LUX_STEP;
-					if(g_last_setpoint_value > LUX_MAX) g_last_setpoint_value = LUX_MAX;
-				}
-				if(g_fix_state == 0) {
-					g_fix_state = 1;
-				}
-			}
-			g_up_debounce = 0;
-		}
-	} else {
-		g_up_debounce = 0;
-	}
-	// 2. Botão DOWN (Diminuir)
-	if((PIND & (1 << BOTAO_MENOS))) {
-		if(g_down_debounce == 0) {
-			g_down_debounce = DEBOUNCE_DELAY;
-		} else if(g_down_debounce == 1) {
-			if(g_fix_state != 2) {
-				if(g_last_setpoint_value > LUX_MIN) {
-					g_last_setpoint_value -= LUX_STEP;
-					if(g_last_setpoint_value < LUX_MIN) g_last_setpoint_value = LUX_MIN;
-				}
-				if(g_fix_state == 0) {
-					g_fix_state = 1;
-				}
-			}
-			g_down_debounce = 0;
-		}
-	} else {
-		g_down_debounce = 0;
-	}
-	// 3. Lógica de Debounce (Decrementa)
-	if(g_up_debounce > 0) g_up_debounce--;
-	if(g_down_debounce > 0) g_down_debounce--;
-	// 4. MÁQUINA DE ESTADOS DE FIXAÇÃO (Contagem de 2 Segundos)
-	else {
-		if(g_fix_state == 1) {
-			g_fix_timer = FIX_TIME_TICKS;
-			g_fix_state = 2; // Transição para Contagem
-		}
-	}
-	if(g_fix_state == 2) {
-		// CONTAGEM (2s)
-		if(g_fix_timer == 0) {
-			g_target_lux = g_last_setpoint_value; // Fixa o valor
-			buzzer_bips(2); // 2 bips para sinalizar bloqueio
-			g_fix_state = 0; // Volta a Estável
-		}
-	}
+    // --- BOTÃO MAIS (UP) COM DEBOUNCE ---
+    if (PIND & (1 << BOTAO_MAIS)) {
+        if (g_up_debounce < DEBOUNCE_TICKS + 1) g_up_debounce++;
+    } else {
+        g_up_debounce = 0;
+    }
+
+    // Dispara ação APENAS quando atinge o limiar (Single Shot)
+    if (g_up_debounce == DEBOUNCE_TICKS) {
+			g_up_debounce = DEBOUNCE_TICKS + 1;
+        if (g_fix_state != 2) {
+            if (g_last_setpoint_value < LUX_MAX) g_last_setpoint_value += LUX_STEP;
+            if (g_fix_state == 0) g_fix_state = 1; // Ativa modo de ajuste
+        }
+    }
+
+    // --- BOTÃO MENOS (DOWN) COM DEBOUNCE ---
+    if (PIND & (1 << BOTAO_MENOS)) {
+        if (g_down_debounce < DEBOUNCE_TICKS + 1) g_down_debounce++;
+    } else {
+        g_down_debounce = 0;
+    }
+
+    if (g_down_debounce == DEBOUNCE_TICKS) {
+			g_down_debounce = DEBOUNCE_TICKS + 1;
+        if (g_fix_state != 2) {
+            if (g_last_setpoint_value > LUX_MIN) g_last_setpoint_value -= LUX_STEP;
+            if (g_fix_state == 0) g_fix_state = 1;
+        }
+    }
+
+    // --- MÁQUINA DE ESTADOS DE FIXAÇÃO (2s) ---
+    // Se estiver em ajuste (1) e soltar os botões -> Conta tempo (2)
+    if (g_fix_state == 1) {
+        if (!(PIND & (1 << BOTAO_MAIS)) && !(PIND & (1 << BOTAO_MENOS))) {
+            g_fix_timer = FIX_TIME_TICKS;
+            g_fix_state = 2;
+        }
+    } 
+    // Se estiver a contar (2) e carregar num botão -> Cancela contagem (1)
+    else if (g_fix_state == 2) {
+        if ((PIND & (1 << BOTAO_MAIS)) || (PIND & (1 << BOTAO_MENOS))) {
+            g_fix_state = 1;
+						return;
+        } else if (g_fix_timer == 0) {
+            // Tempo acabou: Fixa valor
+            g_target_lux = g_last_setpoint_value;
+            buzzer_bips(2);
+            g_fix_state = 0;
+        }
+    }
 }
 void servo_control_automatic(void) {
 	int16_t error = (int16_t) g_target_lux - (int16_t) g_averaged_lux;
 	// Se o sistema ainda está a inicializar o BH1750, não atuar
 	if(g_sensor_count == 0 || g_init_state != 255) return;
+	
 	if(abs(error) <= LUX_BAND_ERROR) {
 		control_motor(PARAR);
 		return;
+		
 	} else if(error > LUX_BAND_ERROR) {
 		// Erro positivo -> abrir
-		if(g_estado_atual < ABRIR) {
-			g_2s_counter = 0;
-			if(g_2s_flag != 1) control_motor(ABRIR);
-			else control_motor(PARAR);
-	} else {
+			if(g_estado_atual != ABRIR) {
+			control_motor(ABRIR);
+			}
+		} else {
 		// Erro negativo -> fechar
-		if(g_estado_atual > FECHAR) {
-			g_2s_counter = 0;
-			if(g_2s_flag !=1 ) control_motor(FECHAR);
-			else control_motor(PARAR);
-		}
+		if(g_estado_atual != FECHAR) {
+			control_motor(FECHAR);
 		}
 		}
 }
@@ -397,7 +379,9 @@ uint16_t bh1750_read(uint8_t addr) {
 	low_byte = i2c_read_nack();
 	i2c_stop();
 	uint16_t data = (high_byte << 8) | low_byte;
-	return (uint16_t)((float) data / 1.2);
+	uint16_t lux = (uint16_t)((float) data / 1.2);
+	if(lux > 65500) lux = 65500;
+	return lux;
 }
 void detect_sensors(void) {
 	g_sensor1_present = bh1750_send(BH1750_ADDR1, BH1750_POWER_ON) && bh1750_send(BH1750_ADDR1, BH1750_CONT_HIGH_RES_MODE2);
@@ -576,23 +560,17 @@ void update_manual_gestures(void) {
 		// Já detetou S1, agora espera S2
 		if(s2) {
 			// Gesto de BAIXO para CIMA -> ABRIR
-			g_2s_counter = 0;
-			if(g_2s_flag != 1){
 				control_motor(ABRIR);
 				g_gesture_state = 0;
 				g_gesture_timer = 0;
-			} else control_motor (PARAR);
 		}
 	} else if(g_gesture_state == 2) {
 		// Já detetou S2, agora espera S1
 		if(s1) {
 			// Gesto de CIMA para BAIXO -> FECHAR
-			g_2s_counter = 0;
-			if(g_2s_flag != 1){
 				control_motor(FECHAR);
 				g_gesture_state = 0;
 				g_gesture_timer = 0;
-				} else control_motor (PARAR);
 		}
 	}
 	s1_prev = s1;
