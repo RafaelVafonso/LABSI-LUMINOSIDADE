@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define F_CPU 16000000 UL
+#define F_CPU 16000000UL
 #define LCD_I2C_ADDR 0x20 // Endereço I2C do PCF8574T (ajuste se necessário)
 #define BH1750_ADDR1 0x23
 #define BH1750_ADDR2 0x5C
@@ -19,6 +19,10 @@
 #define BOTAO_MAIS PD4 // Botão Aumentar
 #define BOTAO_MENOS PD7 // Botão Diminuir
 #define BUZZER_PIN PC0 // Buzzer (PC0)
+
+// --- CONFIGURAÇÃO UART (ESP32) ---
+#define BAUD 9600
+#define UBRR_VAL ((F_CPU/16/BAUD)-1)
 
 #define SONAR1_TRIG PC2
 #define SONAR1_ECHO PD2
@@ -178,6 +182,48 @@ ISR(PCINT1_vect) {
 		g_mode_locked = 0; // Desbloquear sistema para o próximo toque
 	}
 	g_prev_pc1_state = current_state;
+}
+// --- UART (ESP32) ---
+void uart_init(void) {
+    // Configura Baud Rate (9600)
+    UBRR0H = (unsigned char)(UBRR_VAL >> 8);
+    UBRR0L = (unsigned char)UBRR_VAL;
+    // Habilita RX e TX
+    UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+    // Formato: 8 dados, 1 stop bit
+    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+}
+void uart_write(char c) {
+    // Espera até que o registrador de dados esteja vazio
+    while (!(UCSR0A & (1 << UDRE0))) {
+        ; // espera
+    }
+    UDR0 = c; // Coloca o caractere para transmissão
+}
+void uart_write_string(const char* str) {
+    while (*str) {
+        uart_write(*str++);
+    }
+}
+uint8_t uart_available(void) {
+    return (UCSR0A & (1 << RXC0));
+}
+char uart_read(void) {
+    return UDR0;
+}
+void check_uart_commands(void) {
+    if (uart_available()) {
+        char cmd = uart_read();
+        switch(cmd) {
+            case 'A': if(g_operating_mode!=0){g_operating_mode=0;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);} break;
+            case 'M': if(g_operating_mode!=1){g_operating_mode=1;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);set_led_brightness(0);} break;
+            case 'U': if(g_operating_mode==0){if(g_target_lux<LUX_MAX)g_target_lux+=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness<255)set_led_brightness(g_led_brightness+10);else set_led_brightness(255);} break;
+            case 'D': if(g_operating_mode==0){if(g_target_lux>LUX_MIN)g_target_lux-=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness>25)set_led_brightness(g_led_brightness-10);else set_led_brightness(0);} break;
+            case 'O': if(g_operating_mode==1)control_motor(ABRIR); break;
+            case 'C': if(g_operating_mode==1)control_motor(FECHAR); break;
+            case 'S': if(g_operating_mode==1)control_motor(PARAR); break;
+        }
+    }
 }
 // --- LÓGICA DE CONTROLO DE SETPOINT (+/-) ---
 void adjust_setpoint_control(void) {
@@ -443,7 +489,7 @@ void buttons_inic(void) {
 	DDRC |= (1 << BUZZER_PIN);
 	PORTC &= ~(1 << BUZZER_PIN);
 	// Sonares: TRIG como saída, ECHO como entrada
-	DDRD |= (1 << SONAR1_TRIG) | (1 << SONAR2_TRIG);
+	DDRC |= (1 << SONAR1_TRIG) | (1 << SONAR2_TRIG);
 	DDRD &= ~((1 << SONAR1_ECHO) | (1 << SONAR2_ECHO));
 	PORTD &= ~((1 << SONAR1_ECHO) | (1 << SONAR2_ECHO)); // sem pull-up
 	// Interrupção de PC1 (botão touch)
@@ -470,13 +516,23 @@ void control_motor(Servo_pos pos_desejada) {
 }
 // Controlo Manual de LED
 void manual_led_control(void) {
+	static uint8_t repeat_delay = 0;
+	    if (repeat_delay > 0) {
+        repeat_delay--;
+        return;
+    	}
+
     if (PIND & (1 << BOTAO_MAIS)) {
-        if (g_led_brightness < 255) set_led_brightness(g_led_brightness + 5);
-        else set_led_brightness(255);
+        if (g_led_brightness < 255) {
+				set_led_brightness(g_led_brightness + 5);
+				repeat_delay = 3;
+				}else set_led_brightness(255);  
     }
     if (PIND & (1 << BOTAO_MENOS)) {
-        if (g_led_brightness > 0) set_led_brightness(g_led_brightness - 5);
-        else set_led_brightness(0);
+        if (g_led_brightness > 0) {
+				set_led_brightness(g_led_brightness - 5);
+				repeat_delay = 3;
+				}else set_led_brightness(0);
     }
 }
 void set_led_brightness(uint8_t brightness) {
@@ -488,7 +544,7 @@ void set_led_brightness(uint8_t brightness) {
 uint8_t sonar_is_close(uint8_t sonar_id) {
 	uint8_t trig_pin;
 	uint8_t echo_pin;
-	DDRD |= (1 << trig_pin);
+	DDRC |= (1 << trig_pin);
   DDRD &= ~(1 << echo_pin);
 
 	if(sonar_id == 1) {
@@ -499,11 +555,11 @@ uint8_t sonar_is_close(uint8_t sonar_id) {
 		echo_pin = SONAR2_ECHO;
 	}
 	// Trigger: pulso de 10 us
-	PORTD &= ~(1 << trig_pin);
+	PORTC &= ~(1 << trig_pin);
 	delay_us(2);
-	PORTD |= (1 << trig_pin);
+	PORTC |= (1 << trig_pin);
 	delay_us(10);
-	PORTD &= ~(1 << trig_pin);
+	PORTC &= ~(1 << trig_pin);
 	// Espera echo subir (com timeout simples)
 	uint16_t timeout = 0;
 	while(!(PIND & (1 << echo_pin)) && timeout < 5000) {
@@ -578,6 +634,7 @@ void update_manual_gestures(void) {
 }
 // --- FUNÇÃO DE INICIALIZAÇÃO DE HARDWARE ---
 void inic(void) {
+	uart_init();
 	onda1Hz_init();
 	pwm_led_init();
 	pwm_Servo_init();
@@ -671,6 +728,7 @@ int main(void) {
 				// 1. LEITURA DE LUX e MÉDIA
 				g_lux_value = bh1750_read_sensors();
 				g_averaged_lux = average_lux(g_lux_value);
+				check_uart_commands();
 				// 2. Controlo dependendo do modo
 				static uint8_t sonar_tick = 0;
 				if(g_operating_mode == MODE_AUTOMATIC) {
