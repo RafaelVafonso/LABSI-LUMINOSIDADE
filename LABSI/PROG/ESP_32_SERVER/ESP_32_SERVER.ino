@@ -92,7 +92,7 @@ void handleCommand() {
 
 void setup() {
   // Serial de Debug (USB para PC)
-  Serial.begin(115200);
+  Serial.begin(9600);
   
   // Serial de Comunicação com ATmega (Baudrate deve ser igual ao do ATmega)
   Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);
@@ -122,6 +122,6 @@ void loop() {
   // Isto é muito útil para debug se o ATmega enviar mensagens de volta
   if (Serial2.available()) {
     char c = Serial2.read();
-    Serial.write(c); 
+    Serial.println(c); 
   }
 }

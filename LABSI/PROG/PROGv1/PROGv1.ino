@@ -195,10 +195,8 @@ void uart_init(void) {
 }
 void uart_write(char c) {
     // Espera até que o registrador de dados esteja vazio
-    while (!(UCSR0A & (1 << UDRE0))) {
-        ; // espera
-    }
-    UDR0 = c; // Coloca o caractere para transmissão
+    while (!(UCSR0A & (1 << UDRE0))); // espera
+    UDR0 = c;
 }
 void uart_write_string(const char* str) {
     while (*str) {
@@ -209,13 +207,14 @@ uint8_t uart_available(void) {
     return (UCSR0A & (1 << RXC0));
 }
 char uart_read(void) {
+		while (!(UCSR0A & (1<<RXC0)));
     return UDR0;
 }
 void check_uart_commands(void) {
     if (uart_available()) {
         char cmd = uart_read();
         switch(cmd) {
-            case 'A': if(g_operating_mode!=0){g_operating_mode=0;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);} break;
+            case 'A': if(g_operating_mode!=0){uart_write("A"); g_operating_mode=0;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);} break;
             case 'M': if(g_operating_mode!=1){g_operating_mode=1;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);set_led_brightness(0);} break;
             case 'U': if(g_operating_mode==0){if(g_target_lux<LUX_MAX)g_target_lux+=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness<255)set_led_brightness(g_led_brightness+10);else set_led_brightness(255);} break;
             case 'D': if(g_operating_mode==0){if(g_target_lux>LUX_MIN)g_target_lux-=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness>25)set_led_brightness(g_led_brightness-10);else set_led_brightness(0);} break;
@@ -709,6 +708,8 @@ void inic_non_blocking(void) {
 				lcd_clear();
 				g_setup_done = 1;
 				g_init_state = 255;
+				buzzer_bips(3);
+				uart_write_string("Inics finalizadas\n");
 			}
 			break;
 	}
