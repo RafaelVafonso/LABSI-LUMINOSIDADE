@@ -6210,16 +6210,6 @@
 		)
 		(uuid "00ad9ddf-5002-4a15-b500-77cf1d17ad1b")
 	)
-	(label "ESP32{slash}TX"
-		(at 270.51 134.62 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "044f245f-576a-4622-aaae-794636b0afa3")
-	)
 	(label "BUZZER"
 		(at 270.51 60.96 180)
 		(effects
@@ -6350,7 +6340,7 @@
 		)
 		(uuid "30848363-947a-472a-91f5-9f4e0ffbc38d")
 	)
-	(label "TX"
+	(label "TX_ATMEGA"
 		(at 256.54 114.3 0)
 		(effects
 			(font
@@ -6460,15 +6450,15 @@
 		)
 		(uuid "598f8536-01e4-44cf-8731-713e4078c295")
 	)
-	(label "RX{slash}TX_ESP"
-		(at 270.51 132.08 180)
+	(label "RX_ESP-32"
+		(at 270.51 134.62 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "6a462f84-fe2c-4f76-ad8e-c85b09fae325")
+		(uuid "603bae5a-7eea-4ec2-8b61-0fd9c4860ea7")
 	)
 	(label "TRIG"
 		(at 167.64 92.71 0)
@@ -6550,7 +6540,7 @@
 		)
 		(uuid "8cc29e8a-d1d8-4762-8219-53aa341813da")
 	)
-	(label "RX{slash}TX_ESP"
+	(label "RX_ATMEGA"
 		(at 167.64 107.95 0)
 		(effects
 			(font
@@ -6730,7 +6720,7 @@
 		)
 		(uuid "dff781f1-cf51-4881-b07f-5d701025b734")
 	)
-	(label "ESP32{slash}TX"
+	(label "RX_ESP-32"
 		(at 262.89 124.46 0)
 		(effects
 			(font
@@ -6739,6 +6729,16 @@
 			(justify left bottom)
 		)
 		(uuid "e3c6e000-b693-4f29-880a-6ecb0f70df1e")
+	)
+	(label "RX_ATMEGA"
+		(at 270.51 132.08 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "e75e2f86-32c0-4cb5-ba1a-669dddd4a455")
 	)
 	(label "TRIG2"
 		(at 167.64 95.25 0)
@@ -6750,7 +6750,7 @@
 		)
 		(uuid "eaca5844-67a3-4697-baf1-efe796551687")
 	)
-	(label "TX"
+	(label "TX_ATMEGA"
 		(at 167.64 110.49 0)
 		(effects
 			(font

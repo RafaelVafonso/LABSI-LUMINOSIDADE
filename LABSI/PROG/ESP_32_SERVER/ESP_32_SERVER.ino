@@ -92,7 +92,7 @@ void handleCommand() {
 
 void setup() {
   // Serial de Debug (USB para PC)
-  Serial.begin(9600);
+  Serial.begin(115200);
   
   // Serial de Comunicação com ATmega (Baudrate deve ser igual ao do ATmega)
   Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);

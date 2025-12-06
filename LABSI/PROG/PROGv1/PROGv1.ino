@@ -200,7 +200,7 @@ void uart_write(char c) {
 }
 void uart_write_string(const char* str) {
     while (*str) {
-        uart_write(*str++);
+        uart_write(*str++); 
     }
 }
 uint8_t uart_available(void) {
