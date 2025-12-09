@@ -16,10 +16,10 @@
       "/MISO",
       "/MOSI",
       "/XTAL1",
-      "unconnected-(U1-PC3-Pad26)",
       "/ECHO",
       "/XTAL2",
       "Net-(D1-A)",
+      "+5V",
       "/TRIG",
       "/SDA",
       "/SCL",
@@ -28,16 +28,19 @@
       "/ECHO2",
       "Net-(U1-AREF)",
       "/SCK",
-      "unconnected-(J1-Pad3)",
-      "unconnected-(J2-Pad3)",
       "Net-(D1-K)",
       "/TRIG2",
       "/RST-AVR",
       "Net-(J10-Pin_2)",
+      "unconnected-(J1-Pad3)",
       "/PD4{slash}SW1",
-      "unconnected-(U1-PC2-Pad25)",
-      "unconnected-(U1-PB0-Pad14)",
-      "/PD7{slash}SW2"
+      "/PD7{slash}SW2",
+      "unconnected-(J2-Pad3)",
+      "/RX_ESP-32",
+      "/RX_ATMEGA",
+      "/PB3{slash}GATE",
+      "/TX_ATMEGA",
+      "unconnected-(U1-PB0-Pad14)"
     ],
     "high_contrast_mode": 0,
     "net_color_mode": 1,
@@ -84,7 +87,7 @@
       "conflict_shadows",
       "shapes"
     ],
-    "visible_layers": "00000000_00000000_00002a82_aaaaaaaa",
+    "visible_layers": "00000000_00000000_00002a82_aaaaaaff",
     "zone_display_mode": 0
   },
   "git": {
@@ -107,6 +110,8 @@
       false,
       false,
       false,
+      false,
+      false,
       false
     ],
     "col_order": [
@@ -119,7 +124,9 @@
       6,
       7,
       8,
-      9
+      9,
+      10,
+      11
     ],
     "col_widths": [
       186,
@@ -130,6 +137,8 @@
       164,
       183,
       133,
+      112,
+      112,
       112,
       112
     ],
