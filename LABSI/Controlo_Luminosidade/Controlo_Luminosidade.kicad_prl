@@ -1,6 +1,6 @@
 {
   "board": {
-    "active_layer": 0,
+    "active_layer": 2,
     "active_layer_preset": "",
     "auto_track_width": false,
     "hidden_netclasses": [
@@ -37,10 +37,11 @@
       "/PD7{slash}SW2",
       "unconnected-(J2-Pad3)",
       "/RX_ESP-32",
-      "/RX_ATMEGA",
       "/PB3{slash}GATE",
       "/TX_ATMEGA",
-      "unconnected-(U1-PB0-Pad14)"
+      "unconnected-(U1-PB0-Pad14)",
+      "/RX_ATMEGA{slash}TX_ESP-32",
+      "Net-(Q1-G)"
     ],
     "high_contrast_mode": 0,
     "net_color_mode": 1,
@@ -70,7 +71,6 @@
       "footprint_text",
       "footprint_anchors",
       "ratsnest",
-      "grid",
       "footprints_front",
       "footprints_back",
       "footprint_values",
@@ -110,8 +110,6 @@
       false,
       false,
       false,
-      false,
-      false,
       false
     ],
     "col_order": [
@@ -124,9 +122,7 @@
       6,
       7,
       8,
-      9,
-      10,
-      11
+      9
     ],
     "col_widths": [
       186,
@@ -137,8 +133,6 @@
       164,
       183,
       133,
-      112,
-      112,
       112,
       112
     ],
