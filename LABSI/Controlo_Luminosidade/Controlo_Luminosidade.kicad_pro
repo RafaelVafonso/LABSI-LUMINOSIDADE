@@ -544,6 +544,10 @@
       {
         "netclass": "power",
         "pattern": "+5V"
+      },
+      {
+        "netclass": "power",
+        "pattern": "GND"
       }
     ]
   },

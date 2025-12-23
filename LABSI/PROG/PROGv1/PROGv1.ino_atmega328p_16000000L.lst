@@ -99,7 +99,7 @@ __vector_22():
 
 000000a6 <i2c_write(unsigned char)>:
 i2c_write():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:321
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:327
 }
 void i2c_stop(void) {
 	TWCR = (1 << TWINT) | (1 << TWSTO) | (1 << TWEN);
@@ -107,13 +107,13 @@ void i2c_stop(void) {
 void i2c_write(uint8_t data) {
 	TWDR = data;
       a6:	80 93 bb 00 	sts	0x00BB, r24	; 0x8000bb <__DATA_REGION_ORIGIN__+0x5b>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:322
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:328
 	TWCR = (1 << TWINT) | (1 << TWEN);
       aa:	84 e8       	ldi	r24, 0x84	; 132
       ac:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
       b0:	81 e2       	ldi	r24, 0x21	; 33
       b2:	9e e4       	ldi	r25, 0x4E	; 78
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:324
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:330
 	uint16_t timeout = 0;
 	while(!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) {
       b4:	20 91 bc 00 	lds	r18, 0x00BC	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
@@ -121,7 +121,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
       ba:	02 c0       	rjmp	.+4      	; 0xc0 <i2c_write(unsigned char)+0x1a>
       bc:	01 97       	sbiw	r24, 0x01	; 1
       be:	d1 f7       	brne	.-12     	; 0xb4 <i2c_write(unsigned char)+0xe>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:327
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:333
 		timeout++;
 	}
 }
@@ -129,7 +129,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 
 000000c2 <i2c_start()>:
 i2c_start():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:311
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:317
 	TWBR = 72;
 	DDRC &= ~((1 << PC4) | (1 << PC5));
 	PORTC |= (1 << PC4) | (1 << PC5);
@@ -140,7 +140,7 @@ void i2c_start(void) {
       c4:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
       c8:	81 e2       	ldi	r24, 0x21	; 33
       ca:	9e e4       	ldi	r25, 0x4E	; 78
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:313
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:319
 	uint16_t timeout = 0;
 	while(!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) {
       cc:	20 91 bc 00 	lds	r18, 0x00BC	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
@@ -148,7 +148,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
       d2:	02 c0       	rjmp	.+4      	; 0xd8 <i2c_start()+0x16>
       d4:	01 97       	sbiw	r24, 0x01	; 1
       d6:	d1 f7       	brne	.-12     	; 0xcc <i2c_start()+0xa>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:316
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:322
 		timeout++;
 	}
 }
@@ -156,7 +156,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 
 000000da <bh1750_read(unsigned char)>:
 bh1750_read():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:411
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:417
 		return 0;
 	}
 	i2c_stop();
@@ -165,12 +165,12 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 uint16_t bh1750_read(uint8_t addr) {
       da:	cf 93       	push	r28
       dc:	c8 2f       	mov	r28, r24
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:413
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:419
 	uint8_t high_byte, low_byte;
 	i2c_start();
       de:	0e 94 61 00 	call	0xc2	; 0xc2 <i2c_start()>
 i2c_get_status():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:345
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:351
 		timeout++;
 	}
 	return TWDR;
@@ -180,7 +180,7 @@ uint8_t i2c_get_status(void) {
       e2:	80 91 b9 00 	lds	r24, 0x00B9	; 0x8000b9 <__DATA_REGION_ORIGIN__+0x59>
       e6:	88 7f       	andi	r24, 0xF8	; 248
 bh1750_read():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:414
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:420
 	return 1;
 }
 uint16_t bh1750_read(uint8_t addr) {
@@ -190,7 +190,7 @@ uint16_t bh1750_read(uint8_t addr) {
       e8:	88 30       	cpi	r24, 0x08	; 8
       ea:	39 f0       	breq	.+14     	; 0xfa <bh1750_read(unsigned char)+0x20>
 i2c_stop():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:318
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:324
 	while(!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) {
 		timeout++;
 	}
@@ -200,7 +200,7 @@ void i2c_stop(void) {
       ec:	84 e9       	ldi	r24, 0x94	; 148
       ee:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
 bh1750_read():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:421
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:427
 		return 0;
 	}
 	i2c_write((addr << 1) | 1);
@@ -209,7 +209,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 		return 0;
       f2:	90 e0       	ldi	r25, 0x00	; 0
       f4:	80 e0       	ldi	r24, 0x00	; 0
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:430
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:436
 	i2c_stop();
 	uint16_t data = (high_byte << 8) | low_byte;
 	uint16_t lux = (uint16_t)((float) data / 1.2);
@@ -218,7 +218,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 }
       f6:	cf 91       	pop	r28
       f8:	08 95       	ret
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:418
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:424
 	i2c_start();
 	if(i2c_get_status() != 0x08) {
 		i2c_stop();
@@ -230,7 +230,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
       fe:	81 60       	ori	r24, 0x01	; 1
      100:	0e 94 53 00 	call	0xa6	; 0xa6 <i2c_write(unsigned char)>
 i2c_get_status():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:345
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:351
 		timeout++;
 	}
 	return TWDR;
@@ -240,7 +240,7 @@ uint8_t i2c_get_status(void) {
      104:	80 91 b9 00 	lds	r24, 0x00B9	; 0x8000b9 <__DATA_REGION_ORIGIN__+0x59>
      108:	88 7f       	andi	r24, 0xF8	; 248
 bh1750_read():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:419
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:425
 	if(i2c_get_status() != 0x08) {
 		i2c_stop();
 		return 0;
@@ -250,7 +250,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      10a:	80 34       	cpi	r24, 0x40	; 64
      10c:	79 f7       	brne	.-34     	; 0xec <bh1750_read(unsigned char)+0x12>
 i2c_read_ack():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:329
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:335
 	while(!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) {
 		timeout++;
 	}
@@ -261,7 +261,7 @@ uint8_t i2c_read_ack(void) {
      110:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
      114:	81 e2       	ldi	r24, 0x21	; 33
      116:	9e e4       	ldi	r25, 0x4E	; 78
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:331
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:337
 	uint16_t timeout = 0;
 	while(!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) {
      118:	20 91 bc 00 	lds	r18, 0x00BC	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
@@ -269,13 +269,13 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      11e:	02 c0       	rjmp	.+4      	; 0x124 <bh1750_read(unsigned char)+0x4a>
      120:	01 97       	sbiw	r24, 0x01	; 1
      122:	d1 f7       	brne	.-12     	; 0x118 <bh1750_read(unsigned char)+0x3e>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:334
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:340
 		timeout++;
 	}
 	return TWDR;
      124:	60 91 bb 00 	lds	r22, 0x00BB	; 0x8000bb <__DATA_REGION_ORIGIN__+0x5b>
 i2c_read_nack():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:337
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:343
 }
 uint8_t i2c_read_nack(void) {
 	TWCR = (1 << TWINT) | (1 << TWEN);
@@ -283,7 +283,7 @@ uint8_t i2c_read_nack(void) {
      12a:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
      12e:	81 e2       	ldi	r24, 0x21	; 33
      130:	9e e4       	ldi	r25, 0x4E	; 78
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:339
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:345
 	uint16_t timeout = 0;
 	while(!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) {
      132:	20 91 bc 00 	lds	r18, 0x00BC	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
@@ -291,13 +291,13 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      138:	02 c0       	rjmp	.+4      	; 0x13e <bh1750_read(unsigned char)+0x64>
      13a:	01 97       	sbiw	r24, 0x01	; 1
      13c:	d1 f7       	brne	.-12     	; 0x132 <bh1750_read(unsigned char)+0x58>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:342
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:348
 		timeout++;
 	}
 	return TWDR;
      13e:	80 91 bb 00 	lds	r24, 0x00BB	; 0x8000bb <__DATA_REGION_ORIGIN__+0x5b>
 i2c_stop():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:318
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:324
 	while(!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) {
 		timeout++;
 	}
@@ -307,7 +307,7 @@ void i2c_stop(void) {
      142:	94 e9       	ldi	r25, 0x94	; 148
      144:	90 93 bc 00 	sts	0x00BC, r25	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
 bh1750_read():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:426
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:432
 		return 0;
 	}
 	high_byte = i2c_read_ack();
@@ -316,7 +316,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 	uint16_t data = (high_byte << 8) | low_byte;
      148:	76 2f       	mov	r23, r22
      14a:	68 2f       	mov	r22, r24
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:427
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:433
 	uint16_t lux = (uint16_t)((float) data / 1.2);
      14c:	90 e0       	ldi	r25, 0x00	; 0
      14e:	80 e0       	ldi	r24, 0x00	; 0
@@ -337,7 +337,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 
 00000172 <bh1750_send(unsigned char, unsigned char)>:
 bh1750_send():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:396
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:402
 	lcd_write_byte(0b00001100, 0); // Display on, cursor off, blink off
 	lcd_write_byte(0b00000001, 0); // Clear Display
 	lcd_write_byte(0b00000110, 0); // Entry mode: Increment cursor, no display shift
@@ -348,16 +348,16 @@ uint8_t bh1750_send(uint8_t addr, uint8_t data) {
      174:	df 93       	push	r29
      176:	d8 2f       	mov	r29, r24
      178:	c6 2f       	mov	r28, r22
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:397
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:403
 	i2c_start();
      17a:	0e 94 61 00 	call	0xc2	; 0xc2 <i2c_start()>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:398
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:404
 	i2c_write(addr << 1 | 0);
      17e:	8d 2f       	mov	r24, r29
      180:	88 0f       	add	r24, r24
      182:	0e 94 53 00 	call	0xa6	; 0xa6 <i2c_write(unsigned char)>
 i2c_get_status():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:345
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:351
 		timeout++;
 	}
 	return TWDR;
@@ -367,7 +367,7 @@ uint8_t i2c_get_status(void) {
      186:	80 91 b9 00 	lds	r24, 0x00B9	; 0x8000b9 <__DATA_REGION_ORIGIN__+0x59>
      18a:	88 7f       	andi	r24, 0xF8	; 248
 bh1750_send():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:399
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:405
 }
 // --- BH1750 Functions ---
 uint8_t bh1750_send(uint8_t addr, uint8_t data) {
@@ -377,7 +377,7 @@ uint8_t bh1750_send(uint8_t addr, uint8_t data) {
      18c:	88 31       	cpi	r24, 0x18	; 24
      18e:	39 f0       	breq	.+14     	; 0x19e <bh1750_send(unsigned char, unsigned char)+0x2c>
 i2c_stop():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:318
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:324
 	while(!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) {
 		timeout++;
 	}
@@ -387,7 +387,7 @@ void i2c_stop(void) {
      190:	84 e9       	ldi	r24, 0x94	; 148
      192:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
 bh1750_send():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:406
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:412
 		return 0;
 	}
 	i2c_write(data);
@@ -395,7 +395,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 		i2c_stop();
 		return 0;
      196:	80 e0       	ldi	r24, 0x00	; 0
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:410
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:416
 	}
 	i2c_stop();
 	return 1;
@@ -403,7 +403,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      198:	df 91       	pop	r29
      19a:	cf 91       	pop	r28
      19c:	08 95       	ret
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:403
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:409
 	i2c_write(addr << 1 | 0);
 	if(i2c_get_status() != 0x18) { //SLA+W
 		i2c_stop();
@@ -413,7 +413,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      19e:	8c 2f       	mov	r24, r28
      1a0:	0e 94 53 00 	call	0xa6	; 0xa6 <i2c_write(unsigned char)>
 i2c_get_status():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:345
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:351
 		timeout++;
 	}
 	return TWDR;
@@ -423,7 +423,7 @@ uint8_t i2c_get_status(void) {
      1a4:	80 91 b9 00 	lds	r24, 0x00B9	; 0x8000b9 <__DATA_REGION_ORIGIN__+0x59>
      1a8:	88 7f       	andi	r24, 0xF8	; 248
 bh1750_send():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:404
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:410
 	if(i2c_get_status() != 0x18) { //SLA+W
 		i2c_stop();
 		return 0;
@@ -433,7 +433,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      1aa:	88 32       	cpi	r24, 0x28	; 40
      1ac:	89 f7       	brne	.-30     	; 0x190 <bh1750_send(unsigned char, unsigned char)+0x1e>
 i2c_stop():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:318
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:324
 	while(!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) {
 		timeout++;
 	}
@@ -443,7 +443,7 @@ void i2c_stop(void) {
      1ae:	84 e9       	ldi	r24, 0x94	; 148
      1b0:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
 bh1750_send():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:409
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:415
 	if(i2c_get_status() != 0x28) { //DATA+ACK
 		i2c_stop();
 		return 0;
@@ -552,7 +552,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 
 00000218 <sonar_is_close(unsigned char)>:
 sonar_is_close():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:543
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:549
     if (brightness > MAX_LED_PWM) brightness = MAX_LED_PWM;
     OCR2A = brightness;
     g_led_brightness = brightness;
@@ -562,20 +562,20 @@ uint8_t sonar_is_close(uint8_t sonar_id) {
      218:	1f 93       	push	r17
      21a:	cf 93       	push	r28
      21c:	df 93       	push	r29
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:546
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:552
 	uint8_t trig_pin;
 	uint8_t echo_pin;
 	DDRC |= (1 << trig_pin);
      21e:	38 9a       	sbi	0x07, 0	; 7
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:547
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:553
   DDRD &= ~(1 << echo_pin);
      220:	50 98       	cbi	0x0a, 0	; 10
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:550
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:556
 
 	if(sonar_id == 1) {
 		trig_pin = SONAR1_TRIG;
      222:	92 e0       	ldi	r25, 0x02	; 2
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:549
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:555
 	uint8_t trig_pin;
 	uint8_t echo_pin;
 	DDRC |= (1 << trig_pin);
@@ -584,13 +584,13 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 	if(sonar_id == 1) {
      224:	81 30       	cpi	r24, 0x01	; 1
      226:	09 f0       	breq	.+2      	; 0x22a <sonar_is_close(unsigned char)+0x12>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:553
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:559
 		trig_pin = SONAR1_TRIG;
 		echo_pin = SONAR1_ECHO;
 	} else {
 		trig_pin = SONAR2_TRIG;
      228:	93 e0       	ldi	r25, 0x03	; 3
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:557
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:563
 		echo_pin = SONAR2_ECHO;
 	}
 	// Trigger: pulso de 10 us
@@ -607,32 +607,32 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      23c:	10 95       	com	r17
      23e:	81 23       	and	r24, r17
      240:	88 b9       	out	0x08, r24	; 8
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:558
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:564
 	delay_us(2);
      242:	82 e0       	ldi	r24, 0x02	; 2
      244:	90 e0       	ldi	r25, 0x00	; 0
      246:	0e 94 f0 00 	call	0x1e0	; 0x1e0 <delay_us(unsigned int)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:559
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:565
 	PORTC |= (1 << trig_pin);
      24a:	88 b1       	in	r24, 0x08	; 8
      24c:	8c 2b       	or	r24, r28
      24e:	88 b9       	out	0x08, r24	; 8
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:560
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:566
 	delay_us(10);
      250:	8a e0       	ldi	r24, 0x0A	; 10
      252:	90 e0       	ldi	r25, 0x00	; 0
      254:	0e 94 f0 00 	call	0x1e0	; 0x1e0 <delay_us(unsigned int)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:561
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:567
 	PORTC &= ~(1 << trig_pin);
      258:	88 b1       	in	r24, 0x08	; 8
      25a:	81 23       	and	r24, r17
      25c:	88 b9       	out	0x08, r24	; 8
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:563
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:569
 	// Espera echo subir (com timeout simples)
 	uint16_t timeout = 0;
      25e:	30 e0       	ldi	r19, 0x00	; 0
      260:	20 e0       	ldi	r18, 0x00	; 0
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:564
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:570
 	while(!(PIND & (1 << echo_pin)) && timeout < 5000) {
      262:	89 b1       	in	r24, 0x09	; 9
      264:	90 e0       	ldi	r25, 0x00	; 0
@@ -644,18 +644,18 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      270:	83 e1       	ldi	r24, 0x13	; 19
      272:	38 07       	cpc	r19, r24
      274:	49 f1       	breq	.+82     	; 0x2c8 <sonar_is_close(unsigned char)+0xb0>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:565
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:571
 		timeout++;
      276:	2f 5f       	subi	r18, 0xFF	; 255
      278:	3f 4f       	sbci	r19, 0xFF	; 255
      27a:	f3 cf       	rjmp	.-26     	; 0x262 <sonar_is_close(unsigned char)+0x4a>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:567
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:573
 	}
 	if(timeout >= 5000) {
      27c:	28 38       	cpi	r18, 0x88	; 136
      27e:	33 41       	sbci	r19, 0x13	; 19
      280:	19 f1       	breq	.+70     	; 0x2c8 <sonar_is_close(unsigned char)+0xb0>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:571
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:577
 		return 0; // sem resposta
 	}
 	// Mede largura do pulso de echo usando TCNT1 (4 us por tick)
@@ -664,7 +664,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      286:	50 91 85 00 	lds	r21, 0x0085	; 0x800085 <__DATA_REGION_ORIGIN__+0x25>
      28a:	29 e8       	ldi	r18, 0x89	; 137
      28c:	33 e1       	ldi	r19, 0x13	; 19
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:573
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:579
 	timeout = 0;
 	while((PIND & (1 << echo_pin)) && timeout < 5000) {
      28e:	89 b1       	in	r24, 0x09	; 9
@@ -676,19 +676,19 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      29a:	21 50       	subi	r18, 0x01	; 1
      29c:	31 09       	sbc	r19, r1
      29e:	b9 f7       	brne	.-18     	; 0x28e <sonar_is_close(unsigned char)+0x76>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:576
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:582
 		timeout++;
 	}
 	uint16_t end = TCNT1;
      2a0:	80 91 84 00 	lds	r24, 0x0084	; 0x800084 <__DATA_REGION_ORIGIN__+0x24>
      2a4:	90 91 85 00 	lds	r25, 0x0085	; 0x800085 <__DATA_REGION_ORIGIN__+0x25>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:580
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:586
 	// Calcula diferença de ticks considerando wrap em ICR1 (5000)
 	uint16_t ticks;
 	if(end >= start) {
 		ticks = end - start;
      2a8:	9c 01       	movw	r18, r24
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:579
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:585
 		timeout++;
 	}
 	uint16_t end = TCNT1;
@@ -698,7 +698,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      2aa:	84 17       	cp	r24, r20
      2ac:	95 07       	cpc	r25, r21
      2ae:	30 f4       	brcc	.+12     	; 0x2bc <sonar_is_close(unsigned char)+0xa4>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:582
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:588
 		ticks = end - start;
 	} else {
 		ticks = (ICR1 - start) + end;
@@ -708,7 +708,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      2ba:	39 1f       	adc	r19, r25
      2bc:	24 1b       	sub	r18, r20
      2be:	35 0b       	sbc	r19, r21
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:585
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:591
 	}
 	// Se ticks < limite -> menos de ~20 cm
 	if(ticks < SONAR_THRESHOLD_TICKS_20CM) {
@@ -716,7 +716,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      2c2:	2c 32       	cpi	r18, 0x2C	; 44
      2c4:	31 40       	sbci	r19, 0x01	; 1
      2c6:	08 f0       	brcs	.+2      	; 0x2ca <sonar_is_close(unsigned char)+0xb2>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:568
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:574
 	uint16_t timeout = 0;
 	while(!(PIND & (1 << echo_pin)) && timeout < 5000) {
 		timeout++;
@@ -724,7 +724,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 	if(timeout >= 5000) {
 		return 0; // sem resposta
      2c8:	80 e0       	ldi	r24, 0x00	; 0
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:590
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:596
 	if(ticks < SONAR_THRESHOLD_TICKS_20CM) {
 		return 1;
 	} else {
@@ -738,7 +738,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 
 000002d2 <lcd_write_nibble(unsigned char, unsigned char)>:
 lcd_write_nibble():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:354
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:360
 	i2c_start();
 	i2c_write(LCD_I2C_ADDR << 1);
 	i2c_write(data);
@@ -747,30 +747,30 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 void lcd_write_nibble(uint8_t nibble, uint8_t rs) {
      2d2:	cf 93       	push	r28
      2d4:	df 93       	push	r29
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:356
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:362
 	uint8_t data = 0;
 	if(nibble & 0b1000) data |= (1 << 0); // D7 -> P0
      2d6:	83 fb       	bst	r24, 3
      2d8:	cc 27       	eor	r28, r28
      2da:	c0 f9       	bld	r28, 0
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:357
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:363
 	if(nibble & 0b0100) data |= (1 << 1); // D6 -> P1
      2dc:	82 fd       	sbrc	r24, 2
      2de:	c2 60       	ori	r28, 0x02	; 2
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:358
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:364
 	if(nibble & 0b0010) data |= (1 << 2); // D5 -> P2
      2e0:	81 fd       	sbrc	r24, 1
      2e2:	c4 60       	ori	r28, 0x04	; 4
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:359
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:365
 	if(nibble & 0b0001) data |= (1 << 3); // D4 -> P3
      2e4:	80 fd       	sbrc	r24, 0
      2e6:	c8 60       	ori	r28, 0x08	; 8
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:360
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:366
 	if(rs) data |= PCF_RS;
      2e8:	61 11       	cpse	r22, r1
      2ea:	c0 68       	ori	r28, 0x80	; 128
 i2c_lcd_send():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:349
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:355
 uint8_t i2c_get_status(void) {
 	return TWSR & 0b11111000;
 }
@@ -778,17 +778,17 @@ uint8_t i2c_get_status(void) {
 void i2c_lcd_send(uint8_t data) {
 	i2c_start();
      2ec:	0e 94 61 00 	call	0xc2	; 0xc2 <i2c_start()>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:350
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:356
 	i2c_write(LCD_I2C_ADDR << 1);
      2f0:	80 e4       	ldi	r24, 0x40	; 64
      2f2:	0e 94 53 00 	call	0xa6	; 0xa6 <i2c_write(unsigned char)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:351
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:357
 	i2c_write(data);
      2f6:	8c 2f       	mov	r24, r28
      2f8:	80 64       	ori	r24, 0x40	; 64
      2fa:	0e 94 53 00 	call	0xa6	; 0xa6 <i2c_write(unsigned char)>
 i2c_stop():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:318
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:324
 	while(!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) {
 		timeout++;
 	}
@@ -798,7 +798,7 @@ void i2c_stop(void) {
      2fe:	d4 e9       	ldi	r29, 0x94	; 148
      300:	d0 93 bc 00 	sts	0x00BC, r29	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
 lcd_write_nibble():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:363
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:369
 	if(nibble & 0b0010) data |= (1 << 2); // D5 -> P2
 	if(nibble & 0b0001) data |= (1 << 3); // D4 -> P3
 	if(rs) data |= PCF_RS;
@@ -809,7 +809,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      306:	90 e0       	ldi	r25, 0x00	; 0
      308:	0e 94 f0 00 	call	0x1e0	; 0x1e0 <delay_us(unsigned int)>
 i2c_lcd_send():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:349
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:355
 uint8_t i2c_get_status(void) {
 	return TWSR & 0b11111000;
 }
@@ -817,16 +817,16 @@ uint8_t i2c_get_status(void) {
 void i2c_lcd_send(uint8_t data) {
 	i2c_start();
      30c:	0e 94 61 00 	call	0xc2	; 0xc2 <i2c_start()>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:350
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:356
 	i2c_write(LCD_I2C_ADDR << 1);
      310:	80 e4       	ldi	r24, 0x40	; 64
      312:	0e 94 53 00 	call	0xa6	; 0xa6 <i2c_write(unsigned char)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:351
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:357
 	i2c_write(data);
      316:	8c 2f       	mov	r24, r28
      318:	0e 94 53 00 	call	0xa6	; 0xa6 <i2c_write(unsigned char)>
 i2c_stop():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:318
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:324
 	while(!(TWCR & (1 << TWINT)) && timeout < I2C_TIMEOUT_CYCLES) {
 		timeout++;
 	}
@@ -835,7 +835,7 @@ void i2c_stop(void) {
 	TWCR = (1 << TWINT) | (1 << TWSTO) | (1 << TWEN);
      31c:	d0 93 bc 00 	sts	0x00BC, r29	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
 lcd_write_nibble():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:366
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:372
 	// EN high
 	i2c_lcd_send(data | PCF_EN);
 	delay_us(200);
@@ -844,11 +844,11 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 	delay_us(200);
      320:	88 ec       	ldi	r24, 0xC8	; 200
      322:	90 e0       	ldi	r25, 0x00	; 0
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:367
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:373
 }
      324:	df 91       	pop	r29
      326:	cf 91       	pop	r28
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:366
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:372
 	// EN high
 	i2c_lcd_send(data | PCF_EN);
 	delay_us(200);
@@ -859,28 +859,28 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 
 0000032c <lcd_write_byte(unsigned char, unsigned char)>:
 lcd_write_byte():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:368
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:374
 }
 void lcd_write_byte(uint8_t data, uint8_t rs) {
      32c:	cf 93       	push	r28
      32e:	df 93       	push	r29
      330:	c8 2f       	mov	r28, r24
      332:	d6 2f       	mov	r29, r22
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:369
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:375
 	lcd_write_nibble(data >> 4, rs); // High bits
      334:	82 95       	swap	r24
      336:	8f 70       	andi	r24, 0x0F	; 15
      338:	0e 94 69 01 	call	0x2d2	; 0x2d2 <lcd_write_nibble(unsigned char, unsigned char)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:370
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:376
 	lcd_write_nibble(data & 0b00001111, rs); // Low bits
      33c:	6d 2f       	mov	r22, r29
      33e:	8c 2f       	mov	r24, r28
      340:	8f 70       	andi	r24, 0x0F	; 15
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:371
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:377
 }
      342:	df 91       	pop	r29
      344:	cf 91       	pop	r28
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:370
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:376
 	i2c_lcd_send(data & ~PCF_EN);
 	delay_us(200);
 }
@@ -891,7 +891,7 @@ void lcd_write_byte(uint8_t data, uint8_t rs) {
 
 0000034a <lcd_write_string(char const*)>:
 lcd_write_string():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:384
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:390
 	} else {
 		addr = 0b11000000 + col;
 	}
@@ -901,17 +901,17 @@ void lcd_write_string(const char * str) {
      34a:	cf 93       	push	r28
      34c:	df 93       	push	r29
      34e:	ec 01       	movw	r28, r24
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:385
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:391
 	while( * str) {
      350:	89 91       	ld	r24, Y+
      352:	88 23       	and	r24, r24
      354:	21 f0       	breq	.+8      	; 0x35e <lcd_write_string(char const*)+0x14>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:386
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:392
 		lcd_write_byte( * str++, 1);
      356:	61 e0       	ldi	r22, 0x01	; 1
      358:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
      35c:	f9 cf       	rjmp	.-14     	; 0x350 <lcd_write_string(char const*)+0x6>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:388
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:394
 	}
 }
      35e:	df 91       	pop	r29
@@ -979,7 +979,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      3ac:	d1 e0       	ldi	r29, 0x01	; 1
      3ae:	d0 93 00 01 	sts	0x0100, r29	; 0x800100 <__data_start>
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:507
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:513
 			valor_pwm = 125;
 			g_estado_atual = FECHAR;
 			break;
@@ -987,7 +987,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 			valor_pwm = 188;
 			g_estado_atual = PARAR;
      3b2:	d0 93 aa 01 	sts	0x01AA, r29	; 0x8001aa <g_estado_atual>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:514
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
 		case ABRIR:
 			valor_pwm = 250;
 			g_estado_atual = ABRIR;
@@ -1211,7 +1211,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 
 000004ea <main>:
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:718
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:724
 			}
 			break;
 	}
@@ -1252,7 +1252,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      50e:	86 e0       	ldi	r24, 0x06	; 6
      510:	80 93 c2 00 	sts	0x00C2, r24	; 0x8000c2 <__DATA_REGION_ORIGIN__+0x62>
 onda1Hz_init():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:459
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:465
 	}
 	return sum / AVG_SAMPLES;
 }
@@ -1260,129 +1260,129 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 void onda1Hz_init(void) {
 	DDRD |= (1 << PD6);
      514:	56 9a       	sbi	0x0a, 6	; 10
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:460
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:466
 	PORTD &= ~(1 << PD6);
      516:	5e 98       	cbi	0x0b, 6	; 11
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:461
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:467
 	TCCR0A = (1 << WGM01); // CTC Mode
      518:	82 e0       	ldi	r24, 0x02	; 2
      51a:	84 bd       	out	0x24, r24	; 36
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:462
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:468
 	TCCR0B = (1 << CS02) | (1 << CS00); // Prescaler 1024
      51c:	95 e0       	ldi	r25, 0x05	; 5
      51e:	95 bd       	out	0x25, r25	; 37
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:463
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:469
 	OCR0A = 31; // (16M / 1024) / (31+1) = 500 Hz (2ms)
      520:	9f e1       	ldi	r25, 0x1F	; 31
      522:	97 bd       	out	0x27, r25	; 39
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:464
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:470
 	TIMSK0 = (1 << OCIE0A);
      524:	80 93 6e 00 	sts	0x006E, r24	; 0x80006e <__DATA_REGION_ORIGIN__+0xe>
 pwm_led_init():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:467
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:473
 }
 void pwm_led_init(void){
 	DDRB |= (1 << GATE_PIN);
      528:	23 9a       	sbi	0x04, 3	; 4
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:468
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:474
 	PORTB &= ~(1 << GATE_PIN);
      52a:	2b 98       	cbi	0x05, 3	; 5
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:469
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:475
 	TCCR2A = (1 << WGM20) | (1 << COM2A1);
      52c:	81 e8       	ldi	r24, 0x81	; 129
      52e:	80 93 b0 00 	sts	0x00B0, r24	; 0x8000b0 <__DATA_REGION_ORIGIN__+0x50>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:470
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:476
 	TCCR2B =  (1 << CS20) | (1 << CS21);
      532:	83 e0       	ldi	r24, 0x03	; 3
      534:	80 93 b1 00 	sts	0x00B1, r24	; 0x8000b1 <__DATA_REGION_ORIGIN__+0x51>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:471
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:477
 	OCR2A = 0;
      538:	10 92 b3 00 	sts	0x00B3, r1	; 0x8000b3 <__DATA_REGION_ORIGIN__+0x53>
 pwm_Servo_init():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:474
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:480
 }
 void pwm_Servo_init(void) {
 	DDRB |= (1 << PB1);
      53c:	21 9a       	sbi	0x04, 1	; 4
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:475
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:481
 	TCCR1A |= (1 << COM1A1) | (1 << WGM11);//PC
      53e:	80 91 80 00 	lds	r24, 0x0080	; 0x800080 <__DATA_REGION_ORIGIN__+0x20>
      542:	82 68       	ori	r24, 0x82	; 130
      544:	80 93 80 00 	sts	0x0080, r24	; 0x800080 <__DATA_REGION_ORIGIN__+0x20>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:476
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:482
 	TCCR1B |= (1 << WGM13) | (1 << CS11) | (1 << CS10) | (1 << ICNC1); // prescaler 64, noise cancelling
      548:	80 91 81 00 	lds	r24, 0x0081	; 0x800081 <__DATA_REGION_ORIGIN__+0x21>
      54c:	83 69       	ori	r24, 0x93	; 147
      54e:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <__DATA_REGION_ORIGIN__+0x21>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:477
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:483
 	ICR1 = 2500; // 20 ms (50 Hz)
      552:	84 ec       	ldi	r24, 0xC4	; 196
      554:	99 e0       	ldi	r25, 0x09	; 9
      556:	90 93 87 00 	sts	0x0087, r25	; 0x800087 <__DATA_REGION_ORIGIN__+0x27>
      55a:	80 93 86 00 	sts	0x0086, r24	; 0x800086 <__DATA_REGION_ORIGIN__+0x26>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:478
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:484
 	OCR1A = 188;
      55e:	8c eb       	ldi	r24, 0xBC	; 188
      560:	90 e0       	ldi	r25, 0x00	; 0
      562:	90 93 89 00 	sts	0x0089, r25	; 0x800089 <__DATA_REGION_ORIGIN__+0x29>
      566:	80 93 88 00 	sts	0x0088, r24	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
 buttons_inic():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:482
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:488
 }
 void buttons_inic(void) {
 	// Botão touch PC1
 	DDRC &= ~(1 << BOTAO_TOUCH);
      56a:	39 98       	cbi	0x07, 1	; 7
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:483
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:489
 	PORTC &= ~(1 << BOTAO_TOUCH);
      56c:	41 98       	cbi	0x08, 1	; 8
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:485
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:491
 	// Botões +/- em PD4 e PD7
 	DDRD &= ~((1 << BOTAO_MAIS) | (1 << BOTAO_MENOS));
      56e:	8a b1       	in	r24, 0x0a	; 10
      570:	8f 76       	andi	r24, 0x6F	; 111
      572:	8a b9       	out	0x0a, r24	; 10
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:486
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:492
 	PORTD &= ~((1 << BOTAO_MAIS) | (1 << BOTAO_MENOS));
      574:	8b b1       	in	r24, 0x0b	; 11
      576:	8f 76       	andi	r24, 0x6F	; 111
      578:	8b b9       	out	0x0b, r24	; 11
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:488
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:494
 	// BUZZER
 	DDRC |= (1 << BUZZER_PIN);
      57a:	38 9a       	sbi	0x07, 0	; 7
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:489
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:495
 	PORTC &= ~(1 << BUZZER_PIN);
      57c:	40 98       	cbi	0x08, 0	; 8
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:491
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:497
 	// Sonares: TRIG como saída, ECHO como entrada
 	DDRC |= (1 << SONAR1_TRIG) | (1 << SONAR2_TRIG);
      57e:	87 b1       	in	r24, 0x07	; 7
      580:	8c 60       	ori	r24, 0x0C	; 12
      582:	87 b9       	out	0x07, r24	; 7
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:492
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:498
 	DDRD &= ~((1 << SONAR1_ECHO) | (1 << SONAR2_ECHO));
      584:	8a b1       	in	r24, 0x0a	; 10
      586:	83 7f       	andi	r24, 0xF3	; 243
      588:	8a b9       	out	0x0a, r24	; 10
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:493
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:499
 	PORTD &= ~((1 << SONAR1_ECHO) | (1 << SONAR2_ECHO)); // sem pull-up
      58a:	8b b1       	in	r24, 0x0b	; 11
      58c:	83 7f       	andi	r24, 0xF3	; 243
      58e:	8b b9       	out	0x0b, r24	; 11
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:495
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:501
 	// Interrupção de PC1 (botão touch)
 	PCICR |= (1 << PCIE1);
      590:	80 91 68 00 	lds	r24, 0x0068	; 0x800068 <__DATA_REGION_ORIGIN__+0x8>
      594:	82 60       	ori	r24, 0x02	; 2
      596:	80 93 68 00 	sts	0x0068, r24	; 0x800068 <__DATA_REGION_ORIGIN__+0x8>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:496
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:502
 	PCMSK1 |= (1 << PCINT9);
      59a:	80 91 6c 00 	lds	r24, 0x006C	; 0x80006c <__DATA_REGION_ORIGIN__+0xc>
      59e:	82 60       	ori	r24, 0x02	; 2
      5a0:	80 93 6c 00 	sts	0x006C, r24	; 0x80006c <__DATA_REGION_ORIGIN__+0xc>
 inic():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:641
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:647
 	uart_init();
 	onda1Hz_init();
 	pwm_led_init();
@@ -1391,7 +1391,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 	sei();
      5a4:	78 94       	sei
 average_lux():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:455
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:461
 	g_buffer_index = (g_buffer_index + 1) % AVG_SAMPLES;
 	uint32_t sum = 0;
 	for(uint8_t i = 0; i < AVG_SAMPLES; i++) {
@@ -1404,7 +1404,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      5ac:	61 2c       	mov	r6, r1
      5ae:	71 2c       	mov	r7, r1
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:514
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
 		case ABRIR:
 			valor_pwm = 250;
 			g_estado_atual = ABRIR;
@@ -1421,7 +1421,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      5be:	8f 2e       	mov	r8, r31
      5c0:	91 2c       	mov	r9, r1
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:767
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:773
 					// Define valor de display (Preview vs Fixo)
 					uint16_t display_setpoint = g_target_lux;
 					if(g_fix_state != 0) {
@@ -1433,7 +1433,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      5c6:	3f 4f       	sbci	r19, 0xFF	; 255
      5c8:	69 01       	movw	r12, r18
 update_manual_gestures():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:612
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:618
 		if(s1 && !s1_prev) {
 			g_gesture_state = 1; // S1 primeiro (de baixo para cima)
 			g_gesture_timer = GESTURE_TIMEOUT_TICKS;
@@ -1445,7 +1445,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      5ce:	33 24       	eor	r3, r3
      5d0:	33 94       	inc	r3
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:723
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:729
 int main(void) {
 	inic();
 	char buffer[32];
@@ -1456,7 +1456,7 @@ int main(void) {
      5d6:	81 11       	cpse	r24, r1
      5d8:	00 c1       	rjmp	.+512    	; 0x7da <main+0x2f0>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:645
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:651
 	buttons_inic();
 	sei();
 }
@@ -1479,7 +1479,7 @@ void inic_non_blocking(void) {
      5f8:	a5 03       	fmuls	r18, r21
      5fa:	ce 03       	fmulsu	r20, r22
 inic_i2c():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:304
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:310
 		}
 		}
 }
@@ -1489,19 +1489,19 @@ void inic_i2c(void) {
      5fc:	80 91 bc 00 	lds	r24, 0x00BC	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
      600:	84 60       	ori	r24, 0x04	; 4
      602:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__DATA_REGION_ORIGIN__+0x5c>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:305
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:311
 	TWSR = 0;
      606:	10 92 b9 00 	sts	0x00B9, r1	; 0x8000b9 <__DATA_REGION_ORIGIN__+0x59>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:306
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:312
 	TWBR = 72;
      60a:	88 e4       	ldi	r24, 0x48	; 72
      60c:	80 93 b8 00 	sts	0x00B8, r24	; 0x8000b8 <__DATA_REGION_ORIGIN__+0x58>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:307
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:313
 	DDRC &= ~((1 << PC4) | (1 << PC5));
      610:	87 b1       	in	r24, 0x07	; 7
      612:	8f 7c       	andi	r24, 0xCF	; 207
      614:	87 b9       	out	0x07, r24	; 7
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:308
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:314
 	PORTC |= (1 << PC4) | (1 << PC5);
      616:	88 b1       	in	r24, 0x08	; 8
      618:	80 63       	ori	r24, 0x30	; 48
@@ -1519,7 +1519,7 @@ void START_NB_DELAY_MS(uint16_t ms) {
      620:	90 93 83 01 	sts	0x0183, r25	; 0x800183 <g_delay_counter_2ms+0x1>
      624:	80 93 82 01 	sts	0x0182, r24	; 0x800182 <g_delay_counter_2ms>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:649
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:655
 void inic_non_blocking(void) {
 	switch(g_init_state) {
 		case 0:
@@ -1527,7 +1527,7 @@ void inic_non_blocking(void) {
 			START_NB_DELAY_MS(50); // Power-on wait (50ms)
 			g_init_state = 1;
      628:	81 e0       	ldi	r24, 0x01	; 1
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:703
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:709
 					lcd_write_string("2 Sensores");
 					lcd_set_cursor(1, 0);
 					lcd_write_string("Prontos");
@@ -1536,7 +1536,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 				g_init_state = 7;
      62a:	80 93 9f 01 	sts	0x019F, r24	; 0x80019f <g_init_state>
      62e:	d1 cf       	rjmp	.-94     	; 0x5d2 <main+0xe8>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:652
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:658
 			inic_i2c();
 			START_NB_DELAY_MS(50); // Power-on wait (50ms)
 			g_init_state = 1;
@@ -1546,7 +1546,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      630:	0e 94 e7 00 	call	0x1ce	; 0x1ce <IS_DELAY_FINISHED()>
      634:	81 30       	cpi	r24, 0x01	; 1
      636:	69 f6       	brne	.-102    	; 0x5d2 <main+0xe8>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:653
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:659
 				lcd_write_nibble(0x03, 0);
      638:	60 e0       	ldi	r22, 0x00	; 0
      63a:	83 e0       	ldi	r24, 0x03	; 3
@@ -1564,7 +1564,7 @@ void START_NB_DELAY_MS(uint16_t ms) {
      644:	90 93 83 01 	sts	0x0183, r25	; 0x800183 <g_delay_counter_2ms+0x1>
      648:	80 93 82 01 	sts	0x0182, r24	; 0x800182 <g_delay_counter_2ms>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:655
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:661
 			break;
 		case 1:
 			if(IS_DELAY_FINISHED() == 1) {
@@ -1573,7 +1573,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 				g_init_state = 2;
      64c:	82 e0       	ldi	r24, 0x02	; 2
      64e:	ed cf       	rjmp	.-38     	; 0x62a <main+0x140>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:659
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:665
 			}
 			break;
 		case 2:
@@ -1582,7 +1582,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      654:	81 30       	cpi	r24, 0x01	; 1
      656:	09 f0       	breq	.+2      	; 0x65a <main+0x170>
      658:	bc cf       	rjmp	.-136    	; 0x5d2 <main+0xe8>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:660
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:666
 				lcd_write_nibble(0x03, 0);
      65a:	60 e0       	ldi	r22, 0x00	; 0
      65c:	83 e0       	ldi	r24, 0x03	; 3
@@ -1600,7 +1600,7 @@ void START_NB_DELAY_MS(uint16_t ms) {
      666:	90 93 83 01 	sts	0x0183, r25	; 0x800183 <g_delay_counter_2ms+0x1>
      66a:	80 93 82 01 	sts	0x0182, r24	; 0x800182 <g_delay_counter_2ms>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:662
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:668
 			break;
 		case 2:
 			if(IS_DELAY_FINISHED() == 1) {
@@ -1609,7 +1609,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 				g_init_state = 3;
      66e:	83 e0       	ldi	r24, 0x03	; 3
      670:	dc cf       	rjmp	.-72     	; 0x62a <main+0x140>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:666
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:672
 			}
 			break;
 		case 3:
@@ -1618,7 +1618,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      676:	81 30       	cpi	r24, 0x01	; 1
      678:	09 f0       	breq	.+2      	; 0x67c <main+0x192>
      67a:	ab cf       	rjmp	.-170    	; 0x5d2 <main+0xe8>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:667
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:673
 				lcd_write_nibble(0x03, 0);
      67c:	60 e0       	ldi	r22, 0x00	; 0
      67e:	83 e0       	ldi	r24, 0x03	; 3
@@ -1636,7 +1636,7 @@ void START_NB_DELAY_MS(uint16_t ms) {
      688:	90 93 83 01 	sts	0x0183, r25	; 0x800183 <g_delay_counter_2ms+0x1>
      68c:	80 93 82 01 	sts	0x0182, r24	; 0x800182 <g_delay_counter_2ms>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:669
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:675
 			break;
 		case 3:
 			if(IS_DELAY_FINISHED() == 1) {
@@ -1645,7 +1645,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 				g_init_state = 4;
      690:	84 e0       	ldi	r24, 0x04	; 4
      692:	cb cf       	rjmp	.-106    	; 0x62a <main+0x140>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:673
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:679
 			}
 			break;
 		case 4:
@@ -1654,13 +1654,13 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      698:	81 30       	cpi	r24, 0x01	; 1
      69a:	09 f0       	breq	.+2      	; 0x69e <main+0x1b4>
      69c:	9a cf       	rjmp	.-204    	; 0x5d2 <main+0xe8>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:674
-				lcd_write_nibble(0x02, 0); // 4-bit mode
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:680
+				lcd_write_nibble(0x02, 0); // 4-bit mode 
      69e:	60 e0       	ldi	r22, 0x00	; 0
      6a0:	82 e0       	ldi	r24, 0x02	; 2
      6a2:	0e 94 69 01 	call	0x2d2	; 0x2d2 <lcd_write_nibble(unsigned char, unsigned char)>
 lcd_init_setup_cmds():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:390
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:396
 	while( * str) {
 		lcd_write_byte( * str++, 1);
 	}
@@ -1670,23 +1670,23 @@ void lcd_init_setup_cmds(void) {
      6a6:	60 e0       	ldi	r22, 0x00	; 0
      6a8:	88 e2       	ldi	r24, 0x28	; 40
      6aa:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:391
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:397
 	lcd_write_byte(0b00001100, 0); // Display on, cursor off, blink off
      6ae:	60 e0       	ldi	r22, 0x00	; 0
      6b0:	8c e0       	ldi	r24, 0x0C	; 12
      6b2:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:392
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:398
 	lcd_write_byte(0b00000001, 0); // Clear Display
      6b6:	60 e0       	ldi	r22, 0x00	; 0
      6b8:	81 e0       	ldi	r24, 0x01	; 1
      6ba:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:393
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:399
 	lcd_write_byte(0b00000110, 0); // Entry mode: Increment cursor, no display shift
      6be:	60 e0       	ldi	r22, 0x00	; 0
      6c0:	86 e0       	ldi	r24, 0x06	; 6
      6c2:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
 lcd_set_cursor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:382
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:388
 	if(row == 0) {
 		addr = 0b10000000 + col;
 	} else {
@@ -1697,10 +1697,10 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      6c8:	80 e8       	ldi	r24, 0x80	; 128
      6ca:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:677
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:683
 		case 4:
 			if(IS_DELAY_FINISHED() == 1) {
-				lcd_write_nibble(0x02, 0); // 4-bit mode
+				lcd_write_nibble(0x02, 0); // 4-bit mode 
 				lcd_init_setup_cmds();
 				lcd_set_cursor(0, 0);
 				lcd_write_string("Projeto LABSI");
@@ -1720,8 +1720,8 @@ void START_NB_DELAY_MS(uint16_t ms) {
      6da:	90 93 83 01 	sts	0x0183, r25	; 0x800183 <g_delay_counter_2ms+0x1>
      6de:	80 93 82 01 	sts	0x0182, r24	; 0x800182 <g_delay_counter_2ms>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:679
-				lcd_write_nibble(0x02, 0); // 4-bit mode
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:685
+				lcd_write_nibble(0x02, 0); // 4-bit mode 
 				lcd_init_setup_cmds();
 				lcd_set_cursor(0, 0);
 				lcd_write_string("Projeto LABSI");
@@ -1729,7 +1729,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 				g_init_state = 5;
      6e2:	85 e0       	ldi	r24, 0x05	; 5
      6e4:	a2 cf       	rjmp	.-188    	; 0x62a <main+0x140>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:683
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:689
 			}
 			break;
 		case 5:
@@ -1739,7 +1739,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      6ec:	09 f0       	breq	.+2      	; 0x6f0 <main+0x206>
      6ee:	71 cf       	rjmp	.-286    	; 0x5d2 <main+0xe8>
 lcd_clear():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:373
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:379
 void lcd_write_byte(uint8_t data, uint8_t rs) {
 	lcd_write_nibble(data >> 4, rs); // High bits
 	lcd_write_nibble(data & 0b00001111, rs); // Low bits
@@ -1749,7 +1749,7 @@ void lcd_clear(void) {
      6f0:	60 e0       	ldi	r22, 0x00	; 0
      6f2:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
 detect_sensors():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:432
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:438
 	uint16_t lux = (uint16_t)((float) data / 1.2);
 	if(lux > 65500) lux = 65500;
 	return lux;
@@ -1771,7 +1771,7 @@ main():
      710:	10 e0       	ldi	r17, 0x00	; 0
 detect_sensors():
      712:	10 93 85 01 	sts	0x0185, r17	; 0x800185 <g_sensor1_present>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:433
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:439
 	g_sensor2_present = bh1750_send(BH1750_ADDR2, BH1750_POWER_ON) && bh1750_send(BH1750_ADDR2, BH1750_CONT_HIGH_RES_MODE2);
      716:	61 e0       	ldi	r22, 0x01	; 1
      718:	8c e5       	ldi	r24, 0x5C	; 92
@@ -1788,7 +1788,7 @@ main():
      730:	90 e0       	ldi	r25, 0x00	; 0
 detect_sensors():
      732:	90 93 84 01 	sts	0x0184, r25	; 0x800184 <g_sensor2_present>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:434
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:440
 	g_sensor_count = g_sensor1_present + g_sensor2_present;
      736:	19 0f       	add	r17, r25
      738:	10 93 a0 01 	sts	0x01A0, r17	; 0x8001a0 <g_sensor_count>
@@ -1806,7 +1806,7 @@ void START_NB_DELAY_MS(uint16_t ms) {
      744:	80 93 82 01 	sts	0x0182, r24	; 0x800182 <g_delay_counter_2ms>
      748:	70 cf       	rjmp	.-288    	; 0x62a <main+0x140>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:691
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:697
 				START_NB_DELAY_MS(10);
 				g_init_state = 6;
 			}
@@ -1818,7 +1818,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      750:	09 f0       	breq	.+2      	; 0x754 <main+0x26a>
      752:	3f cf       	rjmp	.-386    	; 0x5d2 <main+0xe8>
 lcd_set_cursor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:382
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:388
 	if(row == 0) {
 		addr = 0b10000000 + col;
 	} else {
@@ -1829,7 +1829,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      756:	80 e8       	ldi	r24, 0x80	; 128
      758:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:693
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:699
 			}
 			break;
 		case 6:
@@ -1839,11 +1839,11 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      75c:	80 91 a0 01 	lds	r24, 0x01A0	; 0x8001a0 <g_sensor_count>
      760:	81 11       	cpse	r24, r1
      762:	0c c0       	rjmp	.+24     	; 0x77c <main+0x292>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:694
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:700
 					lcd_write_string("Sem Sensores");
      764:	8a e1       	ldi	r24, 0x1A	; 26
      766:	91 e0       	ldi	r25, 0x01	; 1
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:700
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:706
 				} else if(g_sensor_count == 1) {
 					lcd_write_string("1 Sensor Pronto");
 				} else {
@@ -1864,7 +1864,7 @@ void START_NB_DELAY_MS(uint16_t ms) {
      770:	90 93 83 01 	sts	0x0183, r25	; 0x800183 <g_delay_counter_2ms+0x1>
      774:	80 93 82 01 	sts	0x0182, r24	; 0x800182 <g_delay_counter_2ms>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:703
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:709
 					lcd_write_string("2 Sensores");
 					lcd_set_cursor(1, 0);
 					lcd_write_string("Prontos");
@@ -1873,7 +1873,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 				g_init_state = 7;
      778:	87 e0       	ldi	r24, 0x07	; 7
      77a:	57 cf       	rjmp	.-338    	; 0x62a <main+0x140>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:695
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:701
 		case 6:
 			if(IS_DELAY_FINISHED() == 1) {
 				lcd_set_cursor(0, 0);
@@ -1882,19 +1882,19 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 				} else if(g_sensor_count == 1) {
      77c:	81 30       	cpi	r24, 0x01	; 1
      77e:	19 f4       	brne	.+6      	; 0x786 <main+0x29c>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:696
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:702
 					lcd_write_string("1 Sensor Pronto");
      780:	87 e2       	ldi	r24, 0x27	; 39
      782:	91 e0       	ldi	r25, 0x01	; 1
      784:	f1 cf       	rjmp	.-30     	; 0x768 <main+0x27e>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:698
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:704
 				} else {
 					lcd_write_string("2 Sensores");
      786:	87 e3       	ldi	r24, 0x37	; 55
      788:	91 e0       	ldi	r25, 0x01	; 1
      78a:	0e 94 a5 01 	call	0x34a	; 0x34a <lcd_write_string(char const*)>
 lcd_set_cursor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:382
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:388
 	if(row == 0) {
 		addr = 0b10000000 + col;
 	} else {
@@ -1905,7 +1905,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      790:	80 ec       	ldi	r24, 0xC0	; 192
      792:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:700
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:706
 				} else if(g_sensor_count == 1) {
 					lcd_write_string("1 Sensor Pronto");
 				} else {
@@ -1915,7 +1915,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      796:	82 e4       	ldi	r24, 0x42	; 66
      798:	91 e0       	ldi	r25, 0x01	; 1
      79a:	e6 cf       	rjmp	.-52     	; 0x768 <main+0x27e>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:707
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:713
 				START_NB_DELAY_MS(1500);
 				g_init_state = 7;
 			}
@@ -1928,7 +1928,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      7a4:	09 f0       	breq	.+2      	; 0x7a8 <main+0x2be>
      7a6:	15 cf       	rjmp	.-470    	; 0x5d2 <main+0xe8>
 lcd_clear():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:373
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:379
 void lcd_write_byte(uint8_t data, uint8_t rs) {
 	lcd_write_nibble(data >> 4, rs); // High bits
 	lcd_write_nibble(data & 0b00001111, rs); // Low bits
@@ -1939,7 +1939,7 @@ void lcd_clear(void) {
      7aa:	81 e0       	ldi	r24, 0x01	; 1
      7ac:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
 inic_non_blocking():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:709
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:715
 			}
 			break;
 		case 7:
@@ -1947,11 +1947,11 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 				lcd_clear();
 				g_setup_done = 1;
      7b0:	10 93 b0 01 	sts	0x01B0, r17	; 0x8001b0 <g_setup_done>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:710
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:716
 				g_init_state = 255;
      7b4:	8f ef       	ldi	r24, 0xFF	; 255
      7b6:	80 93 9f 01 	sts	0x019F, r24	; 0x80019f <g_init_state>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:711
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:717
 				buzzer_bips(3);
      7ba:	83 e0       	ldi	r24, 0x03	; 3
      7bc:	0e 94 dc 00 	call	0x1b8	; 0x1b8 <buzzer_bips(unsigned char)>
@@ -1985,7 +1985,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      7d4:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__DATA_REGION_ORIGIN__+0x66>
      7d8:	f5 cf       	rjmp	.-22     	; 0x7c4 <main+0x2da>
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:727
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:733
 		// 1. GESTÃO DA INICIALIZAÇÃO (NON-BLOCKING)
 		if(!g_setup_done) {
 			inic_non_blocking();
@@ -1996,11 +1996,11 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      7de:	88 23       	and	r24, r24
      7e0:	09 f4       	brne	.+2      	; 0x7e4 <main+0x2fa>
      7e2:	f7 ce       	rjmp	.-530    	; 0x5d2 <main+0xe8>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:728
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:734
 				g_flag_2ms = 0;
      7e4:	10 92 af 01 	sts	0x01AF, r1	; 0x8001af <g_flag_2ms>
 bh1750_read_sensors():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:438
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:444
 	g_sensor2_present = bh1750_send(BH1750_ADDR2, BH1750_POWER_ON) && bh1750_send(BH1750_ADDR2, BH1750_CONT_HIGH_RES_MODE2);
 	g_sensor_count = g_sensor1_present + g_sensor2_present;
 }
@@ -2009,7 +2009,7 @@ uint16_t bh1750_read_sensors(void) {
 	if(g_sensor1_present) lux1 = bh1750_read(BH1750_ADDR1);
      7e8:	80 91 85 01 	lds	r24, 0x0185	; 0x800185 <g_sensor1_present>
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:437
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:443
 	g_sensor1_present = bh1750_send(BH1750_ADDR1, BH1750_POWER_ON) && bh1750_send(BH1750_ADDR1, BH1750_CONT_HIGH_RES_MODE2);
 	g_sensor2_present = bh1750_send(BH1750_ADDR2, BH1750_POWER_ON) && bh1750_send(BH1750_ADDR2, BH1750_CONT_HIGH_RES_MODE2);
 	g_sensor_count = g_sensor1_present + g_sensor2_present;
@@ -2019,14 +2019,14 @@ uint16_t bh1750_read_sensors(void) {
      7ec:	10 e0       	ldi	r17, 0x00	; 0
      7ee:	00 e0       	ldi	r16, 0x00	; 0
 bh1750_read_sensors():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:438
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:444
 	if(g_sensor1_present) lux1 = bh1750_read(BH1750_ADDR1);
      7f0:	88 23       	and	r24, r24
      7f2:	21 f0       	breq	.+8      	; 0x7fc <main+0x312>
      7f4:	83 e2       	ldi	r24, 0x23	; 35
      7f6:	0e 94 6d 00 	call	0xda	; 0xda <bh1750_read(unsigned char)>
      7fa:	8c 01       	movw	r16, r24
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:439
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:445
 	if(g_sensor2_present) lux2 = bh1750_read(BH1750_ADDR2);
      7fc:	80 91 84 01 	lds	r24, 0x0184	; 0x800184 <g_sensor2_present>
      800:	88 23       	and	r24, r24
@@ -2034,20 +2034,20 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      804:	5e c0       	rjmp	.+188    	; 0x8c2 <main+0x3d8>
      806:	8c e5       	ldi	r24, 0x5C	; 92
      808:	0e 94 6d 00 	call	0xda	; 0xda <bh1750_read(unsigned char)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:440
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:446
 	if(g_sensor_count == 1) {
      80c:	20 91 a0 01 	lds	r18, 0x01A0	; 0x8001a0 <g_sensor_count>
      810:	21 30       	cpi	r18, 0x01	; 1
      812:	09 f0       	breq	.+2      	; 0x816 <main+0x32c>
      814:	59 c0       	rjmp	.+178    	; 0x8c8 <main+0x3de>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:441
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:447
 		if(lux1 > 0) return lux1;
      816:	01 15       	cp	r16, r1
      818:	11 05       	cpc	r17, r1
      81a:	09 f0       	breq	.+2      	; 0x81e <main+0x334>
      81c:	c8 01       	movw	r24, r16
 average_lux():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:449
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:455
 	if(g_sensor_count == 2) return (uint16_t)((float)(lux1 + lux2)) / 2;
 	return 0;
 }
@@ -2063,7 +2063,7 @@ uint16_t average_lux(uint16_t new_reading) {
      82c:	fe 4f       	sbci	r31, 0xFE	; 254
      82e:	91 83       	std	Z+1, r25	; 0x01
      830:	80 83       	st	Z, r24
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:450
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:456
 	g_buffer_index = (g_buffer_index + 1) % AVG_SAMPLES;
      832:	c9 01       	movw	r24, r18
      834:	01 96       	adiw	r24, 0x01	; 1
@@ -2074,13 +2074,13 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      842:	e6 e8       	ldi	r30, 0x86	; 134
      844:	f1 e0       	ldi	r31, 0x01	; 1
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:451
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:457
 	uint32_t sum = 0;
      846:	60 e0       	ldi	r22, 0x00	; 0
      848:	70 e0       	ldi	r23, 0x00	; 0
      84a:	cb 01       	movw	r24, r22
 average_lux():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:453
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:459
 	for(uint8_t i = 0; i < AVG_SAMPLES; i++) {
 		sum += lux_buffer[i];
      84c:	21 91       	ld	r18, Z+
@@ -2089,7 +2089,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      852:	73 1f       	adc	r23, r19
      854:	81 1d       	adc	r24, r1
      856:	91 1d       	adc	r25, r1
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:452
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:458
 // --- Averaging Function ---
 uint16_t average_lux(uint16_t new_reading) {
 	lux_buffer[g_buffer_index] = new_reading;
@@ -2101,7 +2101,7 @@ uint16_t average_lux(uint16_t new_reading) {
      85c:	2e 17       	cp	r18, r30
      85e:	3f 07       	cpc	r19, r31
      860:	a9 f7       	brne	.-22     	; 0x84c <main+0x362>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:455
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:461
 		sum += lux_buffer[i];
 	}
 	return sum / AVG_SAMPLES;
@@ -2113,7 +2113,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 uart_available():
 C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:207
     while (*str) {
-        uart_write(*str++);
+        uart_write(*str++); 
     }
 }
 uint8_t uart_available(void) {
@@ -2180,7 +2180,7 @@ void check_uart_commands(void) {
      8be:	bd 04       	cpc	r11, r13
      8c0:	a1 04       	cpc	r10, r1
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:437
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:443
 	g_sensor1_present = bh1750_send(BH1750_ADDR1, BH1750_POWER_ON) && bh1750_send(BH1750_ADDR1, BH1750_CONT_HIGH_RES_MODE2);
 	g_sensor2_present = bh1750_send(BH1750_ADDR2, BH1750_POWER_ON) && bh1750_send(BH1750_ADDR2, BH1750_CONT_HIGH_RES_MODE2);
 	g_sensor_count = g_sensor1_present + g_sensor2_present;
@@ -2191,7 +2191,7 @@ uint16_t bh1750_read_sensors(void) {
      8c4:	80 e0       	ldi	r24, 0x00	; 0
      8c6:	a2 cf       	rjmp	.-188    	; 0x80c <main+0x322>
 bh1750_read_sensors():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:444
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:450
 	if(g_sensor2_present) lux2 = bh1750_read(BH1750_ADDR2);
 	if(g_sensor_count == 1) {
 		if(lux1 > 0) return lux1;
@@ -2206,7 +2206,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      8d2:	87 95       	ror	r24
      8d4:	a4 cf       	rjmp	.-184    	; 0x81e <main+0x334>
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:445
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:451
 	return 0;
      8d6:	90 e0       	ldi	r25, 0x00	; 0
      8d8:	80 e0       	ldi	r24, 0x00	; 0
@@ -2253,7 +2253,7 @@ void check_uart_commands(void) {
      900:	81 e0       	ldi	r24, 0x01	; 1
      902:	0e 94 dc 00 	call	0x1b8	; 0x1b8 <buzzer_bips(unsigned char)>
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:507
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:513
 			valor_pwm = 125;
 			g_estado_atual = FECHAR;
 			break;
@@ -2261,7 +2261,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 			valor_pwm = 188;
 			g_estado_atual = PARAR;
      906:	10 93 aa 01 	sts	0x01AA, r17	; 0x8001aa <g_estado_atual>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:514
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
 		case ABRIR:
 			valor_pwm = 250;
 			g_estado_atual = ABRIR;
@@ -2288,7 +2288,7 @@ void check_uart_commands(void) {
      926:	81 e0       	ldi	r24, 0x01	; 1
      928:	0e 94 dc 00 	call	0x1b8	; 0x1b8 <buzzer_bips(unsigned char)>
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:507
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:513
 			valor_pwm = 125;
 			g_estado_atual = FECHAR;
 			break;
@@ -2296,7 +2296,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 			valor_pwm = 188;
 			g_estado_atual = PARAR;
      92c:	10 93 aa 01 	sts	0x01AA, r17	; 0x8001aa <g_estado_atual>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:514
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
 		case ABRIR:
 			valor_pwm = 250;
 			g_estado_atual = ABRIR;
@@ -2306,7 +2306,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      930:	f0 92 89 00 	sts	0x0089, r15	; 0x800089 <__DATA_REGION_ORIGIN__+0x29>
      934:	e0 92 88 00 	sts	0x0088, r14	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
 set_led_brightness():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:539
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:545
 				}else set_led_brightness(0);
     }
 }
@@ -2314,7 +2314,7 @@ void set_led_brightness(uint8_t brightness) {
     if (brightness > MAX_LED_PWM) brightness = MAX_LED_PWM;
     OCR2A = brightness;
      938:	10 92 b3 00 	sts	0x00B3, r1	; 0x8000b3 <__DATA_REGION_ORIGIN__+0x53>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:540
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:546
     g_led_brightness = brightness;
      93c:	10 92 a1 01 	sts	0x01A1, r1	; 0x8001a1 <g_led_brightness>
      940:	1c c0       	rjmp	.+56     	; 0x97a <__stack+0x7b>
@@ -2325,10 +2325,12 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
         switch(cmd) {
             case 'A': if(g_operating_mode!=0){uart_write("A"); g_operating_mode=0;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);} break;
             case 'M': if(g_operating_mode!=1){g_operating_mode=1;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);set_led_brightness(0);} break;
-            case 'U': if(g_operating_mode==0){if(g_target_lux<LUX_MAX)g_target_lux+=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness<255)set_led_brightness(g_led_brightness+10);else set_led_brightness(255);} break;
+            case 'U': if(g_operating_mode==0){
      942:	80 91 ac 01 	lds	r24, 0x01AC	; 0x8001ac <g_operating_mode>
      946:	81 11       	cpse	r24, r1
      948:	f9 c0       	rjmp	.+498    	; 0xb3c <__stack+0x23d>
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:220
+							if(g_target_lux<LUX_MAX)g_target_lux+=LUX_STEP;
      94a:	80 91 03 01 	lds	r24, 0x0103	; 0x800103 <g_target_lux>
      94e:	90 91 04 01 	lds	r25, 0x0104	; 0x800104 <g_target_lux+0x1>
      952:	88 3e       	cpi	r24, 0xE8	; 232
@@ -2337,7 +2339,12 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      958:	80 91 03 01 	lds	r24, 0x0103	; 0x800103 <g_target_lux>
      95c:	90 91 04 01 	lds	r25, 0x0104	; 0x800104 <g_target_lux+0x1>
      960:	c2 96       	adiw	r24, 0x32	; 50
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:220
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:226
+							g_last_setpoint_value=g_target_lux;
+							}else{
+								if(g_led_brightness<255)set_led_brightness(g_led_brightness+10);
+								else set_led_brightness(255);}
+								break;
             case 'D': if(g_operating_mode==0){if(g_target_lux>LUX_MIN)g_target_lux-=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness>25)set_led_brightness(g_led_brightness-10);else set_led_brightness(0);} break;
      962:	90 93 04 01 	sts	0x0104, r25	; 0x800104 <g_target_lux+0x1>
      966:	80 93 03 01 	sts	0x0103, r24	; 0x800103 <g_target_lux>
@@ -2346,7 +2353,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      972:	90 93 02 01 	sts	0x0102, r25	; 0x800102 <g_last_setpoint_value+0x1>
      976:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <g_last_setpoint_value>
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:735
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:741
 				g_lux_value = bh1750_read_sensors();
 				g_averaged_lux = average_lux(g_lux_value);
 				check_uart_commands();
@@ -2357,7 +2364,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      97e:	81 11       	cpse	r24, r1
      980:	5f c1       	rjmp	.+702    	; 0xc40 <__stack+0x341>
 adjust_setpoint_control():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:230
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:236
     }
 }
 // --- LÓGICA DE CONTROLO DE SETPOINT (+/-) ---
@@ -2366,14 +2373,14 @@ void adjust_setpoint_control(void) {
     if (PIND & (1 << BOTAO_MAIS)) {
      982:	4c 9b       	sbis	0x09, 4	; 9
      984:	1e c1       	rjmp	.+572    	; 0xbc2 <__stack+0x2c3>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:231
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:237
         if (g_up_debounce < DEBOUNCE_TICKS + 1) g_up_debounce++;
      986:	80 91 9e 01 	lds	r24, 0x019E	; 0x80019e <g_up_debounce>
      98a:	8b 30       	cpi	r24, 0x0B	; 11
      98c:	18 f4       	brcc	.+6      	; 0x994 <__stack+0x95>
      98e:	8f 5f       	subi	r24, 0xFF	; 255
      990:	80 93 9e 01 	sts	0x019E, r24	; 0x80019e <g_up_debounce>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:237
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:243
     } else {
         g_up_debounce = 0;
     }
@@ -2383,16 +2390,16 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      994:	80 91 9e 01 	lds	r24, 0x019E	; 0x80019e <g_up_debounce>
      998:	8a 30       	cpi	r24, 0x0A	; 10
      99a:	f1 f4       	brne	.+60     	; 0x9d8 <__stack+0xd9>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:238
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:244
 			g_up_debounce = DEBOUNCE_TICKS + 1;
      99c:	8b e0       	ldi	r24, 0x0B	; 11
      99e:	80 93 9e 01 	sts	0x019E, r24	; 0x80019e <g_up_debounce>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:239
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:245
         if (g_fix_state != 2) {
      9a2:	80 91 a8 01 	lds	r24, 0x01A8	; 0x8001a8 <g_fix_state>
      9a6:	82 30       	cpi	r24, 0x02	; 2
      9a8:	b9 f0       	breq	.+46     	; 0x9d8 <__stack+0xd9>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:240
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:246
             if (g_last_setpoint_value < LUX_MAX) g_last_setpoint_value += LUX_STEP;
      9aa:	80 91 01 01 	lds	r24, 0x0101	; 0x800101 <g_last_setpoint_value>
      9ae:	90 91 02 01 	lds	r25, 0x0102	; 0x800102 <g_last_setpoint_value+0x1>
@@ -2404,14 +2411,14 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      9c0:	c2 96       	adiw	r24, 0x32	; 50
      9c2:	90 93 02 01 	sts	0x0102, r25	; 0x800102 <g_last_setpoint_value+0x1>
      9c6:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <g_last_setpoint_value>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:241
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:247
             if (g_fix_state == 0) g_fix_state = 1; // Ativa modo de ajuste
      9ca:	80 91 a8 01 	lds	r24, 0x01A8	; 0x8001a8 <g_fix_state>
      9ce:	81 11       	cpse	r24, r1
      9d0:	03 c0       	rjmp	.+6      	; 0x9d8 <__stack+0xd9>
      9d2:	81 e0       	ldi	r24, 0x01	; 1
      9d4:	80 93 a8 01 	sts	0x01A8, r24	; 0x8001a8 <g_fix_state>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:246
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:252
         }
     }
 
@@ -2419,14 +2426,14 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
     if (PIND & (1 << BOTAO_MENOS)) {
      9d8:	4f 9b       	sbis	0x09, 7	; 9
      9da:	f6 c0       	rjmp	.+492    	; 0xbc8 <__stack+0x2c9>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:247
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:253
         if (g_down_debounce < DEBOUNCE_TICKS + 1) g_down_debounce++;
      9dc:	80 91 9d 01 	lds	r24, 0x019D	; 0x80019d <g_down_debounce>
      9e0:	8b 30       	cpi	r24, 0x0B	; 11
      9e2:	18 f4       	brcc	.+6      	; 0x9ea <__stack+0xeb>
      9e4:	8f 5f       	subi	r24, 0xFF	; 255
      9e6:	80 93 9d 01 	sts	0x019D, r24	; 0x80019d <g_down_debounce>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:252
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:258
     } else {
         g_down_debounce = 0;
     }
@@ -2435,16 +2442,16 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      9ea:	80 91 9d 01 	lds	r24, 0x019D	; 0x80019d <g_down_debounce>
      9ee:	8a 30       	cpi	r24, 0x0A	; 10
      9f0:	e9 f4       	brne	.+58     	; 0xa2c <__stack+0x12d>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:253
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:259
 			g_down_debounce = DEBOUNCE_TICKS + 1;
      9f2:	8b e0       	ldi	r24, 0x0B	; 11
      9f4:	80 93 9d 01 	sts	0x019D, r24	; 0x80019d <g_down_debounce>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:254
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:260
         if (g_fix_state != 2) {
      9f8:	80 91 a8 01 	lds	r24, 0x01A8	; 0x8001a8 <g_fix_state>
      9fc:	82 30       	cpi	r24, 0x02	; 2
      9fe:	b1 f0       	breq	.+44     	; 0xa2c <__stack+0x12d>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:255
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:261
             if (g_last_setpoint_value > LUX_MIN) g_last_setpoint_value -= LUX_STEP;
      a00:	80 91 01 01 	lds	r24, 0x0101	; 0x800101 <g_last_setpoint_value>
      a04:	90 91 02 01 	lds	r25, 0x0102	; 0x800102 <g_last_setpoint_value+0x1>
@@ -2455,14 +2462,14 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      a14:	c2 97       	sbiw	r24, 0x32	; 50
      a16:	90 93 02 01 	sts	0x0102, r25	; 0x800102 <g_last_setpoint_value+0x1>
      a1a:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <g_last_setpoint_value>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:256
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:262
             if (g_fix_state == 0) g_fix_state = 1;
      a1e:	80 91 a8 01 	lds	r24, 0x01A8	; 0x8001a8 <g_fix_state>
      a22:	81 11       	cpse	r24, r1
      a24:	03 c0       	rjmp	.+6      	; 0xa2c <__stack+0x12d>
      a26:	81 e0       	ldi	r24, 0x01	; 1
      a28:	80 93 a8 01 	sts	0x01A8, r24	; 0x8001a8 <g_fix_state>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:262
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:268
         }
     }
 
@@ -2473,22 +2480,22 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      a30:	81 30       	cpi	r24, 0x01	; 1
      a32:	09 f0       	breq	.+2      	; 0xa36 <__stack+0x137>
      a34:	cc c0       	rjmp	.+408    	; 0xbce <__stack+0x2cf>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:263
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:269
         if (!(PIND & (1 << BOTAO_MAIS)) && !(PIND & (1 << BOTAO_MENOS))) {
      a36:	4c 99       	sbic	0x09, 4	; 9
      a38:	0b c0       	rjmp	.+22     	; 0xa50 <__stack+0x151>
      a3a:	4f 99       	sbic	0x09, 7	; 9
      a3c:	09 c0       	rjmp	.+18     	; 0xa50 <__stack+0x151>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:264
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:270
             g_fix_timer = FIX_TIME_TICKS;
      a3e:	88 ee       	ldi	r24, 0xE8	; 232
      a40:	93 e0       	ldi	r25, 0x03	; 3
      a42:	90 93 9c 01 	sts	0x019C, r25	; 0x80019c <g_fix_timer+0x1>
      a46:	80 93 9b 01 	sts	0x019B, r24	; 0x80019b <g_fix_timer>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:265
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:271
             g_fix_state = 2;
      a4a:	82 e0       	ldi	r24, 0x02	; 2
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:271
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:277
         }
     } 
     // Se estiver a contar (2) e carregar num botão -> Cancela contagem (1)
@@ -2497,7 +2504,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
             g_fix_state = 1;
      a4c:	80 93 a8 01 	sts	0x01A8, r24	; 0x8001a8 <g_fix_state>
 servo_control_automatic():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:282
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:288
             g_fix_state = 0;
         }
     }
@@ -2506,7 +2513,7 @@ void servo_control_automatic(void) {
 	int16_t error = (int16_t) g_target_lux - (int16_t) g_averaged_lux;
      a50:	80 91 03 01 	lds	r24, 0x0103	; 0x800103 <g_target_lux>
      a54:	90 91 04 01 	lds	r25, 0x0104	; 0x800104 <g_target_lux+0x1>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:284
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:290
 	// Se o sistema ainda está a inicializar o BH1750, não atuar
 	if(g_sensor_count == 0 || g_init_state != 255) return;
      a58:	20 91 a0 01 	lds	r18, 0x01A0	; 0x8001a0 <g_sensor_count>
@@ -2515,7 +2522,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      a60:	20 91 9f 01 	lds	r18, 0x019F	; 0x80019f <g_init_state>
      a64:	2f 3f       	cpi	r18, 0xFF	; 255
      a66:	a1 f4       	brne	.+40     	; 0xa90 <__stack+0x191>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:282
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:288
             g_fix_state = 0;
         }
     }
@@ -2526,7 +2533,7 @@ void servo_control_automatic(void) {
      a6c:	30 91 ae 01 	lds	r19, 0x01AE	; 0x8001ae <g_averaged_lux+0x1>
      a70:	82 1b       	sub	r24, r18
      a72:	93 0b       	sbc	r25, r19
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:286
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:292
 	// Se o sistema ainda está a inicializar o BH1750, não atuar
 	if(g_sensor_count == 0 || g_init_state != 255) return;
 	
@@ -2539,7 +2546,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      a7e:	08 f0       	brcs	.+2      	; 0xa82 <__stack+0x183>
      a80:	c6 c0       	rjmp	.+396    	; 0xc0e <__stack+0x30f>
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:507
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:513
 			valor_pwm = 125;
 			g_estado_atual = FECHAR;
 			break;
@@ -2548,7 +2555,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 			g_estado_atual = PARAR;
      a82:	81 e0       	ldi	r24, 0x01	; 1
      a84:	80 93 aa 01 	sts	0x01AA, r24	; 0x8001aa <g_estado_atual>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:514
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
 		case ABRIR:
 			valor_pwm = 250;
 			g_estado_atual = ABRIR;
@@ -2558,7 +2565,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      a88:	f0 92 89 00 	sts	0x0089, r15	; 0x800089 <__DATA_REGION_ORIGIN__+0x29>
      a8c:	e0 92 88 00 	sts	0x0088, r14	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:748
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:754
 							update_manual_gestures();
 						}
 				}
@@ -2573,7 +2580,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      a9c:	eb 5f       	subi	r30, 0xFB	; 251
      a9e:	fe 4f       	sbci	r31, 0xFE	; 254
      aa0:	10 81       	ld	r17, Z
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:760
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:766
 					case FECHAR:
 						motor_status = 'F';
 						break;
@@ -2584,29 +2591,29 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      aa6:	84 36       	cpi	r24, 0x64	; 100
      aa8:	08 f4       	brcc	.+2      	; 0xaac <__stack+0x1ad>
      aaa:	93 cd       	rjmp	.-1242   	; 0x5d2 <main+0xe8>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:761
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:767
 					g_display_counter = 0;
      aac:	10 92 a9 01 	sts	0x01A9, r1	; 0x8001a9 <g_display_counter>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:763
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:769
 					// Define valor de display (Preview vs Fixo)
 					uint16_t display_setpoint = g_target_lux;
      ab0:	20 91 03 01 	lds	r18, 0x0103	; 0x800103 <g_target_lux>
      ab4:	30 91 04 01 	lds	r19, 0x0104	; 0x800104 <g_target_lux+0x1>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:764
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:770
 					if(g_fix_state != 0) {
      ab8:	80 91 a8 01 	lds	r24, 0x01A8	; 0x8001a8 <g_fix_state>
      abc:	88 23       	and	r24, r24
      abe:	21 f0       	breq	.+8      	; 0xac8 <__stack+0x1c9>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:765
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:771
 						display_setpoint = g_last_setpoint_value;
      ac0:	20 91 01 01 	lds	r18, 0x0101	; 0x800101 <g_last_setpoint_value>
      ac4:	30 91 02 01 	lds	r19, 0x0102	; 0x800102 <g_last_setpoint_value+0x1>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:768
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:774
 					}
 					sprintf(buffer, "MODO:%s SET:%4u",
 						(g_operating_mode == MODE_AUTOMATIC) ? "A" : "M", display_setpoint);
      ac8:	80 91 ac 01 	lds	r24, 0x01AC	; 0x8001ac <g_operating_mode>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:767
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:773
 					// Define valor de display (Preview vs Fixo)
 					uint16_t display_setpoint = g_target_lux;
 					if(g_fix_state != 0) {
@@ -2629,7 +2636,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      ae6:	cf 92       	push	r12
      ae8:	0e 94 35 08 	call	0x106a	; 0x106a <sprintf>
 lcd_set_cursor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:382
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:388
 	if(row == 0) {
 		addr = 0b10000000 + col;
 	} else {
@@ -2640,7 +2647,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      aee:	80 e8       	ldi	r24, 0x80	; 128
      af0:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:770
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:776
 						display_setpoint = g_last_setpoint_value;
 					}
 					sprintf(buffer, "MODO:%s SET:%4u",
@@ -2649,7 +2656,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 					lcd_write_string(buffer);
      af4:	c6 01       	movw	r24, r12
      af6:	0e 94 a5 01 	call	0x34a	; 0x34a <lcd_write_string(char const*)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:771
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:777
 					sprintf(buffer, "Lux:%4u Motor:%c", g_averaged_lux, motor_status);
      afa:	81 2f       	mov	r24, r17
      afc:	01 2e       	mov	r0, r17
@@ -2669,7 +2676,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      b1c:	cf 92       	push	r12
      b1e:	0e 94 35 08 	call	0x106a	; 0x106a <sprintf>
 lcd_set_cursor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:382
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:388
 	if(row == 0) {
 		addr = 0b10000000 + col;
 	} else {
@@ -2680,7 +2687,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      b24:	80 ec       	ldi	r24, 0xC0	; 192
      b26:	0e 94 96 01 	call	0x32c	; 0x32c <lcd_write_byte(unsigned char, unsigned char)>
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:773
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:779
 						(g_operating_mode == MODE_AUTOMATIC) ? "A" : "M", display_setpoint);
 					lcd_set_cursor(0, 0);
 					lcd_write_string(buffer);
@@ -2696,19 +2703,19 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      b38:	cd bf       	out	0x3d, r28	; 61
      b3a:	4b cd       	rjmp	.-1386   	; 0x5d2 <main+0xe8>
 check_uart_commands():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:219
-    if (uart_available()) {
-        char cmd = uart_read();
-        switch(cmd) {
-            case 'A': if(g_operating_mode!=0){uart_write("A"); g_operating_mode=0;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);} break;
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:223
             case 'M': if(g_operating_mode!=1){g_operating_mode=1;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);set_led_brightness(0);} break;
-            case 'U': if(g_operating_mode==0){if(g_target_lux<LUX_MAX)g_target_lux+=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness<255)set_led_brightness(g_led_brightness+10);else set_led_brightness(255);} break;
+            case 'U': if(g_operating_mode==0){
+							if(g_target_lux<LUX_MAX)g_target_lux+=LUX_STEP;
+							g_last_setpoint_value=g_target_lux;
+							}else{
+								if(g_led_brightness<255)set_led_brightness(g_led_brightness+10);
      b3c:	80 91 a1 01 	lds	r24, 0x01A1	; 0x8001a1 <g_led_brightness>
      b40:	8f 3f       	cpi	r24, 0xFF	; 255
      b42:	09 f0       	breq	.+2      	; 0xb46 <__stack+0x247>
      b44:	86 5f       	subi	r24, 0xF6	; 246
 set_led_brightness():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:539
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:545
 				}else set_led_brightness(0);
     }
 }
@@ -2716,17 +2723,17 @@ void set_led_brightness(uint8_t brightness) {
     if (brightness > MAX_LED_PWM) brightness = MAX_LED_PWM;
     OCR2A = brightness;
      b46:	80 93 b3 00 	sts	0x00B3, r24	; 0x8000b3 <__DATA_REGION_ORIGIN__+0x53>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:540
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:546
     g_led_brightness = brightness;
      b4a:	80 93 a1 01 	sts	0x01A1, r24	; 0x8001a1 <g_led_brightness>
      b4e:	15 cf       	rjmp	.-470    	; 0x97a <__stack+0x7b>
 check_uart_commands():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:220
-        char cmd = uart_read();
-        switch(cmd) {
-            case 'A': if(g_operating_mode!=0){uart_write("A"); g_operating_mode=0;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);} break;
-            case 'M': if(g_operating_mode!=1){g_operating_mode=1;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);set_led_brightness(0);} break;
-            case 'U': if(g_operating_mode==0){if(g_target_lux<LUX_MAX)g_target_lux+=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness<255)set_led_brightness(g_led_brightness+10);else set_led_brightness(255);} break;
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:226
+							g_last_setpoint_value=g_target_lux;
+							}else{
+								if(g_led_brightness<255)set_led_brightness(g_led_brightness+10);
+								else set_led_brightness(255);}
+								break;
             case 'D': if(g_operating_mode==0){if(g_target_lux>LUX_MIN)g_target_lux-=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness>25)set_led_brightness(g_led_brightness-10);else set_led_brightness(0);} break;
      b50:	80 91 ac 01 	lds	r24, 0x01AC	; 0x8001ac <g_operating_mode>
      b54:	81 11       	cpse	r24, r1
@@ -2746,14 +2753,14 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      b7a:	de ce       	rjmp	.-580    	; 0x938 <__stack+0x39>
      b7c:	8a 50       	subi	r24, 0x0A	; 10
      b7e:	e3 cf       	rjmp	.-58     	; 0xb46 <__stack+0x247>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:221
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:227
             case 'O': if(g_operating_mode==1)control_motor(ABRIR); break;
      b80:	80 91 ac 01 	lds	r24, 0x01AC	; 0x8001ac <g_operating_mode>
      b84:	81 30       	cpi	r24, 0x01	; 1
      b86:	09 f0       	breq	.+2      	; 0xb8a <__stack+0x28b>
      b88:	f8 ce       	rjmp	.-528    	; 0x97a <__stack+0x7b>
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:511
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:517
 			valor_pwm = 188;
 			g_estado_atual = PARAR;
 			break;
@@ -2762,7 +2769,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 			g_estado_atual = ABRIR;
      b8a:	82 e0       	ldi	r24, 0x02	; 2
      b8c:	80 93 aa 01 	sts	0x01AA, r24	; 0x8001aa <g_estado_atual>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:514
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
 			break;
 	}
 	OCR1A = valor_pwm;
@@ -2770,10 +2777,10 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      b94:	80 92 88 00 	sts	0x0088, r8	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
      b98:	f0 ce       	rjmp	.-544    	; 0x97a <__stack+0x7b>
 check_uart_commands():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:222
-            case 'A': if(g_operating_mode!=0){uart_write("A"); g_operating_mode=0;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);} break;
-            case 'M': if(g_operating_mode!=1){g_operating_mode=1;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);set_led_brightness(0);} break;
-            case 'U': if(g_operating_mode==0){if(g_target_lux<LUX_MAX)g_target_lux+=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness<255)set_led_brightness(g_led_brightness+10);else set_led_brightness(255);} break;
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:228
+								if(g_led_brightness<255)set_led_brightness(g_led_brightness+10);
+								else set_led_brightness(255);}
+								break;
             case 'D': if(g_operating_mode==0){if(g_target_lux>LUX_MIN)g_target_lux-=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness>25)set_led_brightness(g_led_brightness-10);else set_led_brightness(0);} break;
             case 'O': if(g_operating_mode==1)control_motor(ABRIR); break;
             case 'C': if(g_operating_mode==1)control_motor(FECHAR); break;
@@ -2782,7 +2789,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      ba0:	09 f0       	breq	.+2      	; 0xba4 <__stack+0x2a5>
      ba2:	eb ce       	rjmp	.-554    	; 0x97a <__stack+0x7b>
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:503
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:509
 void control_motor(Servo_pos pos_desejada) {
 	uint16_t valor_pwm;
 	switch(pos_desejada) {
@@ -2790,7 +2797,7 @@ void control_motor(Servo_pos pos_desejada) {
 			valor_pwm = 125;
 			g_estado_atual = FECHAR;
      ba4:	10 92 aa 01 	sts	0x01AA, r1	; 0x8001aa <g_estado_atual>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:514
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
 		case ABRIR:
 			valor_pwm = 250;
 			g_estado_atual = ABRIR;
@@ -2801,9 +2808,9 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      bac:	a0 92 88 00 	sts	0x0088, r10	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
      bb0:	e4 ce       	rjmp	.-568    	; 0x97a <__stack+0x7b>
 check_uart_commands():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:223
-            case 'M': if(g_operating_mode!=1){g_operating_mode=1;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);set_led_brightness(0);} break;
-            case 'U': if(g_operating_mode==0){if(g_target_lux<LUX_MAX)g_target_lux+=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness<255)set_led_brightness(g_led_brightness+10);else set_led_brightness(255);} break;
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:229
+								else set_led_brightness(255);}
+								break;
             case 'D': if(g_operating_mode==0){if(g_target_lux>LUX_MIN)g_target_lux-=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness>25)set_led_brightness(g_led_brightness-10);else set_led_brightness(0);} break;
             case 'O': if(g_operating_mode==1)control_motor(ABRIR); break;
             case 'C': if(g_operating_mode==1)control_motor(FECHAR); break;
@@ -2813,7 +2820,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      bb8:	09 f0       	breq	.+2      	; 0xbbc <__stack+0x2bd>
      bba:	df ce       	rjmp	.-578    	; 0x97a <__stack+0x7b>
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:507
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:513
 			valor_pwm = 125;
 			g_estado_atual = FECHAR;
 			break;
@@ -2823,7 +2830,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      bbc:	80 93 aa 01 	sts	0x01AA, r24	; 0x8001aa <g_estado_atual>
      bc0:	a4 ce       	rjmp	.-696    	; 0x90a <__stack+0xb>
 adjust_setpoint_control():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:233
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:239
 void adjust_setpoint_control(void) {
     // --- BOTÃO MAIS (UP) COM DEBOUNCE ---
     if (PIND & (1 << BOTAO_MAIS)) {
@@ -2832,7 +2839,7 @@ void adjust_setpoint_control(void) {
         g_up_debounce = 0;
      bc2:	10 92 9e 01 	sts	0x019E, r1	; 0x80019e <g_up_debounce>
      bc6:	e6 ce       	rjmp	.-564    	; 0x994 <__stack+0x95>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:249
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:255
 
     // --- BOTÃO MENOS (DOWN) COM DEBOUNCE ---
     if (PIND & (1 << BOTAO_MENOS)) {
@@ -2841,7 +2848,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
         g_down_debounce = 0;
      bc8:	10 92 9d 01 	sts	0x019D, r1	; 0x80019d <g_down_debounce>
      bcc:	0e cf       	rjmp	.-484    	; 0x9ea <__stack+0xeb>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:269
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:275
             g_fix_timer = FIX_TIME_TICKS;
             g_fix_state = 2;
         }
@@ -2852,13 +2859,13 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      bd2:	82 30       	cpi	r24, 0x02	; 2
      bd4:	09 f0       	breq	.+2      	; 0xbd8 <__stack+0x2d9>
      bd6:	3c cf       	rjmp	.-392    	; 0xa50 <__stack+0x151>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:270
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:276
         if ((PIND & (1 << BOTAO_MAIS)) || (PIND & (1 << BOTAO_MENOS))) {
      bd8:	4c 99       	sbic	0x09, 4	; 9
      bda:	17 c0       	rjmp	.+46     	; 0xc0a <__stack+0x30b>
      bdc:	4f 99       	sbic	0x09, 7	; 9
      bde:	15 c0       	rjmp	.+42     	; 0xc0a <__stack+0x30b>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:273
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:279
             g_fix_state = 1;
 						return;
         } else if (g_fix_timer == 0) {
@@ -2867,22 +2874,22 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      be8:	89 2b       	or	r24, r25
      bea:	09 f0       	breq	.+2      	; 0xbee <__stack+0x2ef>
      bec:	31 cf       	rjmp	.-414    	; 0xa50 <__stack+0x151>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:275
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:281
             // Tempo acabou: Fixa valor
             g_target_lux = g_last_setpoint_value;
      bee:	80 91 01 01 	lds	r24, 0x0101	; 0x800101 <g_last_setpoint_value>
      bf2:	90 91 02 01 	lds	r25, 0x0102	; 0x800102 <g_last_setpoint_value+0x1>
      bf6:	90 93 04 01 	sts	0x0104, r25	; 0x800104 <g_target_lux+0x1>
      bfa:	80 93 03 01 	sts	0x0103, r24	; 0x800103 <g_target_lux>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:276
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:282
             buzzer_bips(2);
      bfe:	82 e0       	ldi	r24, 0x02	; 2
      c00:	0e 94 dc 00 	call	0x1b8	; 0x1b8 <buzzer_bips(unsigned char)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:277
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:283
             g_fix_state = 0;
      c04:	10 92 a8 01 	sts	0x01A8, r1	; 0x8001a8 <g_fix_state>
      c08:	23 cf       	rjmp	.-442    	; 0xa50 <__stack+0x151>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:271
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:277
         }
     } 
     // Se estiver a contar (2) e carregar num botão -> Cancela contagem (1)
@@ -2893,7 +2900,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      c0c:	1f cf       	rjmp	.-450    	; 0xa4c <__stack+0x14d>
      c0e:	e0 91 aa 01 	lds	r30, 0x01AA	; 0x8001aa <g_estado_atual>
 servo_control_automatic():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:290
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:296
 	
 	if(abs(error) <= LUX_BAND_ERROR) {
 		control_motor(PARAR);
@@ -2902,14 +2909,14 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 	} else if(error > LUX_BAND_ERROR) {
      c12:	4f 97       	sbiw	r24, 0x1f	; 31
      c14:	5c f0       	brlt	.+22     	; 0xc2c <__stack+0x32d>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:292
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:298
 		// Erro positivo -> abrir
 			if(g_estado_atual != ABRIR) {
      c16:	e2 30       	cpi	r30, 0x02	; 2
      c18:	09 f4       	brne	.+2      	; 0xc1c <__stack+0x31d>
      c1a:	3f cf       	rjmp	.-386    	; 0xa9a <__stack+0x19b>
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:511
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:517
 			valor_pwm = 188;
 			g_estado_atual = PARAR;
 			break;
@@ -2918,7 +2925,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 			g_estado_atual = ABRIR;
      c1c:	82 e0       	ldi	r24, 0x02	; 2
      c1e:	80 93 aa 01 	sts	0x01AA, r24	; 0x8001aa <g_estado_atual>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:514
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
 			break;
 	}
 	OCR1A = valor_pwm;
@@ -2926,7 +2933,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      c26:	80 92 88 00 	sts	0x0088, r8	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
      c2a:	32 cf       	rjmp	.-412    	; 0xa90 <__stack+0x191>
 servo_control_automatic():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:297
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:303
 			if(g_estado_atual != ABRIR) {
 			control_motor(ABRIR);
 			}
@@ -2937,7 +2944,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      c2e:	09 f4       	brne	.+2      	; 0xc32 <__stack+0x333>
      c30:	34 cf       	rjmp	.-408    	; 0xa9a <__stack+0x19b>
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:503
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:509
 void control_motor(Servo_pos pos_desejada) {
 	uint16_t valor_pwm;
 	switch(pos_desejada) {
@@ -2945,7 +2952,7 @@ void control_motor(Servo_pos pos_desejada) {
 			valor_pwm = 125;
 			g_estado_atual = FECHAR;
      c32:	10 92 aa 01 	sts	0x01AA, r1	; 0x8001aa <g_estado_atual>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:514
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
 		case ABRIR:
 			valor_pwm = 250;
 			g_estado_atual = ABRIR;
@@ -2956,7 +2963,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      c3a:	a0 92 88 00 	sts	0x0088, r10	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
      c3e:	28 cf       	rjmp	.-432    	; 0xa90 <__stack+0x191>
 manual_led_control():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:519
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:525
 }
 // Controlo Manual de LED
 void manual_led_control(void) {
@@ -2965,10 +2972,10 @@ void manual_led_control(void) {
      c40:	80 91 a2 01 	lds	r24, 0x01A2	; 0x8001a2 <manual_led_control()::repeat_delay>
      c44:	88 23       	and	r24, r24
      c46:	59 f0       	breq	.+22     	; 0xc5e <__stack+0x35f>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:526
         repeat_delay--;
      c48:	81 50       	subi	r24, 0x01	; 1
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:533
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:539
 				}else set_led_brightness(255);  
     }
     if (PIND & (1 << BOTAO_MENOS)) {
@@ -2977,7 +2984,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 				repeat_delay = 3;
      c4a:	80 93 a2 01 	sts	0x01A2, r24	; 0x8001a2 <manual_led_control()::repeat_delay>
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:740
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:746
 				if(g_operating_mode == MODE_AUTOMATIC) {
 					adjust_setpoint_control();
 					servo_control_automatic();
@@ -2986,11 +2993,11 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 					sonar_tick++;
      c4e:	80 91 ab 01 	lds	r24, 0x01AB	; 0x8001ab <main::sonar_tick>
      c52:	8f 5f       	subi	r24, 0xFF	; 255
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:741
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:747
 						if(sonar_tick >= 25) { // ~50 ms
      c54:	89 31       	cpi	r24, 0x19	; 25
      c56:	40 f5       	brcc	.+80     	; 0xca8 <__stack+0x3a9>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:740
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:746
 				if(g_operating_mode == MODE_AUTOMATIC) {
 					adjust_setpoint_control();
 					servo_control_automatic();
@@ -3000,7 +3007,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      c58:	80 93 ab 01 	sts	0x01AB, r24	; 0x8001ab <main::sonar_tick>
      c5c:	19 cf       	rjmp	.-462    	; 0xa90 <__stack+0x191>
 manual_led_control():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:524
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:530
 	    if (repeat_delay > 0) {
         repeat_delay--;
         return;
@@ -3009,16 +3016,16 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
     if (PIND & (1 << BOTAO_MAIS)) {
      c5e:	4c 9b       	sbis	0x09, 4	; 9
      c60:	0c c0       	rjmp	.+24     	; 0xc7a <__stack+0x37b>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:525
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:531
         if (g_led_brightness < 255) {
      c62:	80 91 a1 01 	lds	r24, 0x01A1	; 0x8001a1 <g_led_brightness>
      c66:	8f 3f       	cpi	r24, 0xFF	; 255
      c68:	a9 f0       	breq	.+42     	; 0xc94 <__stack+0x395>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:526
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:532
 				set_led_brightness(g_led_brightness + 5);
      c6a:	8b 5f       	subi	r24, 0xFB	; 251
 set_led_brightness():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:539
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:545
 				}else set_led_brightness(0);
     }
 }
@@ -3026,11 +3033,11 @@ void set_led_brightness(uint8_t brightness) {
     if (brightness > MAX_LED_PWM) brightness = MAX_LED_PWM;
     OCR2A = brightness;
      c6c:	80 93 b3 00 	sts	0x00B3, r24	; 0x8000b3 <__DATA_REGION_ORIGIN__+0x53>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:540
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:546
     g_led_brightness = brightness;
      c70:	80 93 a1 01 	sts	0x01A1, r24	; 0x8001a1 <g_led_brightness>
 manual_led_control():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:527
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:533
     	}
 
     if (PIND & (1 << BOTAO_MAIS)) {
@@ -3039,22 +3046,22 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 				repeat_delay = 3;
      c74:	83 e0       	ldi	r24, 0x03	; 3
      c76:	80 93 a2 01 	sts	0x01A2, r24	; 0x8001a2 <manual_led_control()::repeat_delay>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:530
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:536
 				}else set_led_brightness(255);  
     }
     if (PIND & (1 << BOTAO_MENOS)) {
      c7a:	4f 9b       	sbis	0x09, 7	; 9
      c7c:	e8 cf       	rjmp	.-48     	; 0xc4e <__stack+0x34f>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:531
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:537
         if (g_led_brightness > 0) {
      c7e:	80 91 a1 01 	lds	r24, 0x01A1	; 0x8001a1 <g_led_brightness>
      c82:	88 23       	and	r24, r24
      c84:	61 f0       	breq	.+24     	; 0xc9e <__stack+0x39f>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:532
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:538
 				set_led_brightness(g_led_brightness - 5);
      c86:	85 50       	subi	r24, 0x05	; 5
 set_led_brightness():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:539
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:545
 				}else set_led_brightness(0);
     }
 }
@@ -3062,11 +3069,11 @@ void set_led_brightness(uint8_t brightness) {
     if (brightness > MAX_LED_PWM) brightness = MAX_LED_PWM;
     OCR2A = brightness;
      c88:	80 93 b3 00 	sts	0x00B3, r24	; 0x8000b3 <__DATA_REGION_ORIGIN__+0x53>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:540
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:546
     g_led_brightness = brightness;
      c8c:	80 93 a1 01 	sts	0x01A1, r24	; 0x8001a1 <g_led_brightness>
 manual_led_control():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:533
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:539
 				}else set_led_brightness(255);  
     }
     if (PIND & (1 << BOTAO_MENOS)) {
@@ -3076,7 +3083,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      c90:	83 e0       	ldi	r24, 0x03	; 3
      c92:	db cf       	rjmp	.-74     	; 0xc4a <__stack+0x34b>
 set_led_brightness():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:539
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:545
 				}else set_led_brightness(0);
     }
 }
@@ -3084,11 +3091,11 @@ void set_led_brightness(uint8_t brightness) {
     if (brightness > MAX_LED_PWM) brightness = MAX_LED_PWM;
     OCR2A = brightness;
      c94:	80 93 b3 00 	sts	0x00B3, r24	; 0x8000b3 <__DATA_REGION_ORIGIN__+0x53>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:540
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:546
     g_led_brightness = brightness;
      c98:	80 93 a1 01 	sts	0x01A1, r24	; 0x8001a1 <g_led_brightness>
      c9c:	ee cf       	rjmp	.-36     	; 0xc7a <__stack+0x37b>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:539
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:545
 				}else set_led_brightness(0);
     }
 }
@@ -3096,12 +3103,12 @@ void set_led_brightness(uint8_t brightness) {
     if (brightness > MAX_LED_PWM) brightness = MAX_LED_PWM;
     OCR2A = brightness;
      c9e:	10 92 b3 00 	sts	0x00B3, r1	; 0x8000b3 <__DATA_REGION_ORIGIN__+0x53>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:540
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:546
     g_led_brightness = brightness;
      ca2:	10 92 a1 01 	sts	0x01A1, r1	; 0x8001a1 <g_led_brightness>
      ca6:	d3 cf       	rjmp	.-90     	; 0xc4e <__stack+0x34f>
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:742
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:748
 					servo_control_automatic();
 				} else {
 					manual_led_control();
@@ -3110,7 +3117,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 							sonar_tick = 0;
      ca8:	10 92 ab 01 	sts	0x01AB, r1	; 0x8001ab <main::sonar_tick>
 update_manual_gestures():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:597
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:603
 // S1 (baixo) -> S2 (cima)   => ABRIR
 // S2 (cima)  -> S1 (baixo)  => FECHAR
 void update_manual_gestures(void) {
@@ -3120,11 +3127,11 @@ void update_manual_gestures(void) {
      cac:	81 e0       	ldi	r24, 0x01	; 1
      cae:	0e 94 0c 01 	call	0x218	; 0x218 <sonar_is_close(unsigned char)>
      cb2:	18 2f       	mov	r17, r24
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:598
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:604
 	uint8_t s2 = sonar_is_close(2);
      cb4:	82 e0       	ldi	r24, 0x02	; 2
      cb6:	0e 94 0c 01 	call	0x218	; 0x218 <sonar_is_close(unsigned char)>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:600
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:606
 	// Reset do gesto se o tempo expirar
 	if(g_gesture_timer == 0 && g_gesture_state != 0) {
      cba:	20 91 a6 01 	lds	r18, 0x01A6	; 0x8001a6 <g_gesture_timer>
@@ -3133,10 +3140,10 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      cc4:	29 f4       	brne	.+10     	; 0xcd0 <__stack+0x3d1>
      cc6:	90 91 a5 01 	lds	r25, 0x01A5	; 0x8001a5 <g_gesture_state>
      cca:	91 11       	cpse	r25, r1
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:601
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:607
 		g_gesture_state = 0;
      ccc:	10 92 a5 01 	sts	0x01A5, r1	; 0x8001a5 <g_gesture_state>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:605
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:611
 	}
 	// Estados:
 	// 0: idle, 1: S1 primeiro, 2: S2 primeiro
@@ -3144,7 +3151,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      cd0:	90 91 a5 01 	lds	r25, 0x01A5	; 0x8001a5 <g_gesture_state>
      cd4:	91 11       	cpse	r25, r1
      cd6:	1a c0       	rjmp	.+52     	; 0xd0c <__stack+0x40d>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:607
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:613
 		// Procura primeira ativação
 		if(s1 && !s1_prev) {
      cd8:	11 23       	and	r17, r17
@@ -3152,19 +3159,19 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      cdc:	90 91 a4 01 	lds	r25, 0x01A4	; 0x8001a4 <update_manual_gestures()::s1_prev>
      ce0:	91 11       	cpse	r25, r1
      ce2:	0c c0       	rjmp	.+24     	; 0xcfc <__stack+0x3fd>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:608
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:614
 			g_gesture_state = 1; // S1 primeiro (de baixo para cima)
      ce4:	91 e0       	ldi	r25, 0x01	; 1
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:611
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:617
 			g_gesture_timer = GESTURE_TIMEOUT_TICKS;
 		} else if(s2 && !s2_prev) {
 			g_gesture_state = 2; // S2 primeiro (de cima para baixo)
      ce6:	90 93 a5 01 	sts	0x01A5, r25	; 0x8001a5 <g_gesture_state>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:612
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:618
 			g_gesture_timer = GESTURE_TIMEOUT_TICKS;
      cea:	30 92 a7 01 	sts	0x01A7, r3	; 0x8001a7 <g_gesture_timer+0x1>
      cee:	20 92 a6 01 	sts	0x01A6, r2	; 0x8001a6 <g_gesture_timer>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:631
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:637
 				control_motor(FECHAR);
 				g_gesture_state = 0;
 				g_gesture_timer = 0;
@@ -3172,11 +3179,11 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 	}
 	s1_prev = s1;
      cf2:	10 93 a4 01 	sts	0x01A4, r17	; 0x8001a4 <update_manual_gestures()::s1_prev>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:632
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:638
 	s2_prev = s2;
      cf6:	80 93 a3 01 	sts	0x01A3, r24	; 0x8001a3 <update_manual_gestures()::s2_prev>
      cfa:	ca ce       	rjmp	.-620    	; 0xa90 <__stack+0x191>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:610
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:616
 	if(g_gesture_state == 0) {
 		// Procura primeira ativação
 		if(s1 && !s1_prev) {
@@ -3188,24 +3195,24 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      d00:	90 91 a3 01 	lds	r25, 0x01A3	; 0x8001a3 <update_manual_gestures()::s2_prev>
      d04:	91 11       	cpse	r25, r1
      d06:	f5 cf       	rjmp	.-22     	; 0xcf2 <__stack+0x3f3>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:611
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:617
 			g_gesture_state = 2; // S2 primeiro (de cima para baixo)
      d08:	92 e0       	ldi	r25, 0x02	; 2
      d0a:	ed cf       	rjmp	.-38     	; 0xce6 <__stack+0x3e7>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:614
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:620
 			g_gesture_timer = GESTURE_TIMEOUT_TICKS;
 		}
 	} else if(g_gesture_state == 1) {
      d0c:	90 91 a5 01 	lds	r25, 0x01A5	; 0x8001a5 <g_gesture_state>
      d10:	91 30       	cpi	r25, 0x01	; 1
      d12:	81 f4       	brne	.+32     	; 0xd34 <__stack+0x435>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:616
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:622
 		// Já detetou S1, agora espera S2
 		if(s2) {
      d14:	88 23       	and	r24, r24
      d16:	69 f3       	breq	.-38     	; 0xcf2 <__stack+0x3f3>
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:511
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:517
 			valor_pwm = 188;
 			g_estado_atual = PARAR;
 			break;
@@ -3214,14 +3221,14 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 			g_estado_atual = ABRIR;
      d18:	92 e0       	ldi	r25, 0x02	; 2
      d1a:	90 93 aa 01 	sts	0x01AA, r25	; 0x8001aa <g_estado_atual>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:514
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
 			break;
 	}
 	OCR1A = valor_pwm;
      d1e:	90 92 89 00 	sts	0x0089, r9	; 0x800089 <__DATA_REGION_ORIGIN__+0x29>
      d22:	80 92 88 00 	sts	0x0088, r8	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
 update_manual_gestures():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:627
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:633
 	} else if(g_gesture_state == 2) {
 		// Já detetou S2, agora espera S1
 		if(s1) {
@@ -3229,12 +3236,12 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
 				control_motor(FECHAR);
 				g_gesture_state = 0;
      d26:	10 92 a5 01 	sts	0x01A5, r1	; 0x8001a5 <g_gesture_state>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:628
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:634
 				g_gesture_timer = 0;
      d2a:	10 92 a7 01 	sts	0x01A7, r1	; 0x8001a7 <g_gesture_timer+0x1>
      d2e:	10 92 a6 01 	sts	0x01A6, r1	; 0x8001a6 <g_gesture_timer>
      d32:	df cf       	rjmp	.-66     	; 0xcf2 <__stack+0x3f3>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:622
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:628
 			// Gesto de BAIXO para CIMA -> ABRIR
 				control_motor(ABRIR);
 				g_gesture_state = 0;
@@ -3244,13 +3251,13 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      d34:	90 91 a5 01 	lds	r25, 0x01A5	; 0x8001a5 <g_gesture_state>
      d38:	92 30       	cpi	r25, 0x02	; 2
      d3a:	d9 f6       	brne	.-74     	; 0xcf2 <__stack+0x3f3>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:624
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:630
 		// Já detetou S2, agora espera S1
 		if(s1) {
      d3c:	11 23       	and	r17, r17
      d3e:	c9 f2       	breq	.-78     	; 0xcf2 <__stack+0x3f3>
 control_motor():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:503
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:509
 void control_motor(Servo_pos pos_desejada) {
 	uint16_t valor_pwm;
 	switch(pos_desejada) {
@@ -3258,7 +3265,7 @@ void control_motor(Servo_pos pos_desejada) {
 			valor_pwm = 125;
 			g_estado_atual = FECHAR;
      d40:	10 92 aa 01 	sts	0x01AA, r1	; 0x8001aa <g_estado_atual>
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:514
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:520
 		case ABRIR:
 			valor_pwm = 250;
 			g_estado_atual = ABRIR;
@@ -3269,7 +3276,7 @@ C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1
      d48:	a0 92 88 00 	sts	0x0088, r10	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
      d4c:	ec cf       	rjmp	.-40     	; 0xd26 <__stack+0x427>
 main():
-C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:767
+C:\Users\Utilizador\Desktop\RAFA\UNI\LABSI-LUMINOSIDADE\LABSI\PROG\PROGv1/PROGv1.ino:773
 					// Define valor de display (Preview vs Fixo)
 					uint16_t display_setpoint = g_target_lux;
 					if(g_fix_state != 0) {

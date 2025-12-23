@@ -1,6 +1,6 @@
 {
   "board": {
-    "active_layer": 2,
+    "active_layer": 5,
     "active_layer_preset": "",
     "auto_track_width": false,
     "hidden_netclasses": [
@@ -37,11 +37,12 @@
       "/PD7{slash}SW2",
       "unconnected-(J2-Pad3)",
       "/RX_ESP-32",
-      "/PB3{slash}GATE",
+      "unconnected-(U1-PD5-Pad11)",
       "/TX_ATMEGA",
       "unconnected-(U1-PB0-Pad14)",
       "/RX_ATMEGA{slash}TX_ESP-32",
-      "Net-(Q1-G)"
+      "Net-(Q1-G)",
+      "Net-(F1-Pad1)"
     ],
     "high_contrast_mode": 0,
     "net_color_mode": 1,
@@ -87,7 +88,7 @@
       "conflict_shadows",
       "shapes"
     ],
-    "visible_layers": "00000000_00000000_00002a82_aaaaaaff",
+    "visible_layers": "00000000_00000000_00002a82_aaaaaafb",
     "zone_display_mode": 0
   },
   "git": {
