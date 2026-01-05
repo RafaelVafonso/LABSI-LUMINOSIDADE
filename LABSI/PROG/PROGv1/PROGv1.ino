@@ -224,8 +224,8 @@ void check_uart_commands(void) {
 								else set_led_brightness(255);}
 								break;
             case 'D': if(g_operating_mode==0){if(g_target_lux>LUX_MIN)g_target_lux-=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness>25)set_led_brightness(g_led_brightness-10);else set_led_brightness(0);} break;
-            case 'O': if(g_operating_mode==1)control_motor(ABRIR); break;
-            case 'C': if(g_operating_mode==1)control_motor(FECHAR); break;
+            case 'O': if(g_operating_mode==1)control_motor(FECHAR); break;
+            case 'C': if(g_operating_mode==1)control_motor(ABRIR); break;
             case 'S': if(g_operating_mode==1)control_motor(PARAR); break;
         }
     }
@@ -477,11 +477,12 @@ void pwm_led_init(void){
 	OCR2A = 0;
 }
 void pwm_Servo_init(void) {
-	DDRB |= (1 << PB1);
-	TCCR1A |= (1 << COM1A1) | (1 << WGM11);//PC
+	DDRB |= (1 << PB1) | (1 << PB2);
+	TCCR1A |= (1 << COM1A1) | (1 << COM1B1)| (1 << WGM11);//PC
 	TCCR1B |= (1 << WGM13) | (1 << CS11) | (1 << CS10) | (1 << ICNC1); // prescaler 64, noise cancelling
 	ICR1 = 2500; // 20 ms (50 Hz)
 	OCR1A = 188;
+	OCR1B = 188;
 }
 void buttons_inic(void) {
 	// Botão touch PC1
@@ -502,22 +503,27 @@ void buttons_inic(void) {
 	PCMSK1 |= (1 << PCINT9);
 }
 void control_motor(Servo_pos pos_desejada) {
-	uint16_t valor_pwm;
+	uint16_t valor_pwm_1A;
+	uint16_t valor_pwm_1B;
 	switch(pos_desejada) {
 		case FECHAR:
-			valor_pwm = 125;
+			valor_pwm_1A = 160;
+			valor_pwm_1B = 150;
 			g_estado_atual = FECHAR;
 			break;
 		case PARAR:
-			valor_pwm = 188;
+			valor_pwm_1A = 188;
+			valor_pwm_1B = 188;
 			g_estado_atual = PARAR;
 			break;
 		case ABRIR:
-			valor_pwm = 250;
+			valor_pwm_1A = 210;
+			valor_pwm_1B = 220;
 			g_estado_atual = ABRIR;
 			break;
 	}
-	OCR1A = valor_pwm;
+	OCR1A = valor_pwm_1A;
+	OCR1B = valor_pwm_1B;
 }
 // Controlo Manual de LED
 void manual_led_control(void) {
