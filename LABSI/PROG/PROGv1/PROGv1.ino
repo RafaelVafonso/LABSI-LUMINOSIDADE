@@ -1,18 +1,21 @@
 #include <avr/io.h>
-
+#include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #define F_CPU 16000000UL
-#define LCD_I2C_ADDR 0x20 // Endereço I2C do PCF8574T (ajuste se necessário)
 #define BH1750_ADDR1 0x23
 #define BH1750_ADDR2 0x5C
 #define BH1750_POWER_ON 0x01
 #define BH1750_CONT_HIGH_RES_MODE2 0x11
-// Mapeamento PCF8574T (P7=RS, P6=EN, P3=D4, P2=D5, P1=D6, P0=D7)
-#define PCF_RS 0b10000000
-#define PCF_EN 0b01000000
+
+#define SSD1306_ADDR 0x3C
+char last_line0[20] = "";
+char last_line1[20] = "";
+char last_line2[20] = "";
+uint8_t last_bar_width = 255;
+
 #define MODE_AUTOMATIC 0
 #define MODE_MANUAL 1
 #define BOTAO_TOUCH PC1
@@ -29,16 +32,26 @@
 #define SONAR2_TRIG PC3
 #define SONAR2_ECHO PD3
 // 20 cm ~ 1156 us de echo -> com Timer1 a 4 us/tick => ~290 ticks
-#define SONAR_THRESHOLD_TICKS_20CM 300
+#define SONAR_THRESHOLD_TICKS_20CM 290
 #define LUX_STEP 50
 #define LUX_MAX 1000
 #define LUX_MIN 0
-#define LUX_BAND_ERROR 30
+#define LUX_BAND_ERROR 40
 #define I2C_TIMEOUT_CYCLES 20000
 #define FIX_TIME_TICKS 1000
 #define DEBOUNCE_TICKS 10
 
 #define GESTURE_TIMEOUT_TICKS 500
+
+#define BLIND1_MAX_TICKS 6200
+#define BLIND2_MAX_TICKS 3300
+#define STEP_CLOSE 10           // Velocidade descer
+#define STEP_OPEN 13            // Velocidade subir (compensação gravidade)
+#define LED_FADE_INTERVAL 100
+
+// Endereço EEPROM para guardar posicao
+#define EEP_POS1_ADDR (uint16_t*)0x00
+#define EEP_POS2_ADDR (uint16_t*)0x02
 
 #define GATE_PIN PB3
 #define MAX_LED_PWM 255
@@ -46,11 +59,11 @@
 volatile uint16_t g_delay_counter_2ms = 0; // Contador principal, decrementa a cada 2ms
 volatile uint8_t g_init_state = 0; // Máquina de estados para inicialização
 volatile uint8_t g_setup_done = 0; // Flag: 1 quando setup concluído
-volatile uint8_t g_operating_mode = MODE_AUTOMATIC;
+volatile uint8_t g_operating_mode = MODE_MANUAL;
 volatile uint8_t g_mode_changed = 1; // Flag para limpar LCD
 volatile uint8_t g_prev_pc1_state = 0; // Para detetar a borda do botão
 volatile uint8_t g_mode_locked = 0; // Bloqueio após 1º toque
-volatile uint16_t g_target_lux = 150;
+volatile uint16_t g_target_lux = 50;
 volatile uint8_t g_contador = 0;
 volatile char g_flag_2ms = 0;
 volatile uint8_t g_display_counter = 0;
@@ -61,6 +74,7 @@ volatile uint16_t g_fix_timer = 0; // Timer de 2 segundos
 // Gesto com sonares (modo manual)
 volatile uint8_t g_gesture_state = 0; // 0: idle, 1: S1 primeiro, 2: S2 primeiro
 volatile uint16_t g_gesture_timer = 0; // timeout do gesto
+volatile uint32_t g_millis = 0;
 
 uint8_t g_up_debounce = 0;
 uint8_t g_down_debounce = 0;
@@ -76,20 +90,125 @@ uint8_t g_sensor2_present = 0;
 uint16_t lux_buffer[AVG_SAMPLES] = {0};
 uint8_t g_buffer_index = 0;
 uint16_t g_averaged_lux = 0;
-// Controlo Motor
+
 typedef enum {
 	FECHAR = 0,
-		PARAR = 1,
-		ABRIR = 2,
+	PARAR = 1,
+	ABRIR = 2,
 }
 Servo_pos;
-uint8_t g_estado_atual;
-Servo_pos pos_desejada;
+Servo_pos g_motor1_action = PARAR;
+Servo_pos g_motor2_action = PARAR;
+Servo_pos g_last_motor1_action = PARAR;//serve para comparar este estado de modo a obter correspondencias e guardar na eeprom
+Servo_pos g_last_motor2_action = PARAR;
 
-void control_motor(Servo_pos pos_desejada);
+// Posições virtuais independentes
+int32_t g_blind1_pos = 0; 
+int32_t g_blind2_pos = 0;
+
+void control_motor_1(Servo_pos action);
+void control_motor_2(Servo_pos action);
 
 uint8_t sonar_is_close(uint8_t sonar_id);
 void update_manual_gestures(void);
+
+const uint8_t font6x8[][6] = {
+    {0x00,0x00,0x00,0x00,0x00,0x00}, // 32  ' '
+    {0x00,0x00,0x5F,0x00,0x00,0x00}, // 33  '!'
+    {0x00,0x07,0x00,0x07,0x00,0x00}, // 34  '"'
+    {0x14,0x7F,0x14,0x7F,0x14,0x00}, // 35  '#'
+    {0x24,0x2A,0x7F,0x2A,0x12,0x00}, // 36  '$'
+    {0x23,0x13,0x08,0x64,0x62,0x00}, // 37  '%'
+    {0x36,0x49,0x55,0x22,0x50,0x00}, // 38  '&'
+    {0x00,0x05,0x03,0x00,0x00,0x00}, // 39  '''
+    {0x00,0x1C,0x22,0x41,0x00,0x00}, // 40  '('
+    {0x00,0x41,0x22,0x1C,0x00,0x00}, // 41  ')'
+    {0x14,0x08,0x3E,0x08,0x14,0x00}, // 42  '*'
+    {0x08,0x08,0x3E,0x08,0x08,0x00}, // 43  '+'
+    {0x00,0x50,0x30,0x00,0x00,0x00}, // 44  ','
+    {0x08,0x08,0x08,0x08,0x08,0x00}, // 45  '-'
+    {0x00,0x60,0x60,0x00,0x00,0x00}, // 46  '.'
+    {0x20,0x10,0x08,0x04,0x02,0x00}, // 47  '/'
+    {0x3E,0x51,0x49,0x45,0x3E,0x00}, // 48  '0'
+    {0x00,0x42,0x7F,0x40,0x00,0x00}, // 49  '1'
+    {0x42,0x61,0x51,0x49,0x46,0x00}, // 50  '2'
+    {0x21,0x41,0x45,0x4B,0x31,0x00}, // 51  '3'
+    {0x18,0x14,0x12,0x7F,0x10,0x00}, // 52  '4'
+    {0x27,0x45,0x45,0x45,0x39,0x00}, // 53  '5'
+    {0x3C,0x4A,0x49,0x49,0x30,0x00}, // 54  '6'
+    {0x01,0x71,0x09,0x05,0x03,0x00}, // 55  '7'
+    {0x36,0x49,0x49,0x49,0x36,0x00}, // 56  '8'
+    {0x06,0x49,0x49,0x29,0x1E,0x00}, // 57  '9'
+    {0x00,0x36,0x36,0x00,0x00,0x00}, // 58  ':'
+    {0x00,0x56,0x36,0x00,0x00,0x00}, // 59  ';'
+    {0x08,0x14,0x22,0x41,0x00,0x00}, // 60  '<'
+    {0x14,0x14,0x14,0x14,0x14,0x00}, // 61  '='
+    {0x00,0x41,0x22,0x14,0x08,0x00}, // 62  '>'
+    {0x02,0x01,0x51,0x09,0x06,0x00}, // 63  '?'
+    {0x3E,0x41,0x5D,0x59,0x4E,0x00}, // 64  '@'
+    {0x7E,0x11,0x11,0x11,0x7E,0x00}, // 65  'A'
+    {0x7F,0x49,0x49,0x49,0x36,0x00}, // 66  'B'
+    {0x3E,0x41,0x41,0x41,0x22,0x00}, // 67  'C'
+    {0x7F,0x41,0x41,0x22,0x1C,0x00}, // 68  'D'
+    {0x7F,0x49,0x49,0x49,0x41,0x00}, // 69  'E'
+    {0x7F,0x09,0x09,0x09,0x01,0x00}, // 70  'F'
+    {0x3E,0x41,0x49,0x49,0x7A,0x00}, // 71  'G'
+    {0x7F,0x08,0x08,0x08,0x7F,0x00}, // 72  'H'
+    {0x00,0x41,0x7F,0x41,0x00,0x00}, // 73  'I'
+    {0x20,0x40,0x41,0x3F,0x01,0x00}, // 74  'J'
+    {0x7F,0x08,0x14,0x22,0x41,0x00}, // 75  'K'
+    {0x7F,0x40,0x40,0x40,0x40,0x00}, // 76  'L'
+    {0x7F,0x02,0x0C,0x02,0x7F,0x00}, // 77  'M'
+    {0x7F,0x04,0x08,0x10,0x7F,0x00}, // 78  'N'
+    {0x3E,0x41,0x41,0x41,0x3E,0x00}, // 79  'O'
+    {0x7F,0x09,0x09,0x09,0x06,0x00}, // 80  'P'
+    {0x3E,0x41,0x51,0x21,0x5E,0x00}, // 81  'Q'
+    {0x7F,0x09,0x19,0x29,0x46,0x00}, // 82  'R'
+    {0x46,0x49,0x49,0x49,0x31,0x00}, // 83  'S'
+    {0x01,0x01,0x7F,0x01,0x01,0x00}, // 84  'T'
+    {0x3F,0x40,0x40,0x40,0x3F,0x00}, // 85  'U'
+    {0x1F,0x20,0x40,0x20,0x1F,0x00}, // 86  'V'
+    {0x7F,0x20,0x18,0x20,0x7F,0x00}, // 87  'W'
+    {0x63,0x14,0x08,0x14,0x63,0x00}, // 88  'X'
+    {0x07,0x08,0x70,0x08,0x07,0x00}, // 89  'Y'
+    {0x61,0x51,0x49,0x45,0x43,0x00}, // 90  'Z'
+    {0x00,0x7F,0x41,0x41,0x00,0x00}, // 91  '['
+    {0x02,0x04,0x08,0x10,0x20,0x00}, // 92  '\'
+    {0x00,0x41,0x41,0x7F,0x00,0x00}, // 93  ']'
+    {0x04,0x02,0x01,0x02,0x04,0x00}, // 94  '^'
+    {0x80,0x80,0x80,0x80,0x80,0x00}, // 95  '_'
+    {0x00,0x03,0x05,0x00,0x00,0x00}, // 96  '`'
+    {0x20,0x54,0x54,0x54,0x78,0x00}, // 97  'a'
+    {0x7F,0x48,0x44,0x44,0x38,0x00}, // 98  'b'
+    {0x38,0x44,0x44,0x44,0x20,0x00}, // 99  'c'
+    {0x38,0x44,0x44,0x48,0x7F,0x00}, // 100 'd'
+    {0x38,0x54,0x54,0x54,0x18,0x00}, // 101 'e'
+    {0x08,0x7E,0x09,0x01,0x02,0x00}, // 102 'f'
+    {0x0C,0x52,0x52,0x52,0x3E,0x00}, // 103 'g'
+    {0x7F,0x08,0x04,0x04,0x78,0x00}, // 104 'h'
+    {0x00,0x44,0x7D,0x40,0x00,0x00}, // 105 'i'
+    {0x20,0x40,0x44,0x3D,0x00,0x00}, // 106 'j'
+    {0x7F,0x10,0x28,0x44,0x00,0x00}, // 107 'k'
+    {0x00,0x41,0x7F,0x40,0x00,0x00}, // 108 'l'
+    {0x7C,0x04,0x18,0x04,0x7C,0x00}, // 109 'm'
+    {0x7C,0x08,0x04,0x04,0x78,0x00}, // 110 'n'
+    {0x38,0x44,0x44,0x44,0x38,0x00}, // 111 'o'
+    {0x7C,0x14,0x14,0x14,0x08,0x00}, // 112 'p'
+    {0x08,0x14,0x14,0x14,0x7C,0x00}, // 113 'q'
+    {0x7C,0x08,0x04,0x04,0x08,0x00}, // 114 'r'
+    {0x48,0x54,0x54,0x54,0x20,0x00}, // 115 's'
+    {0x04,0x3F,0x44,0x40,0x20,0x00}, // 116 't'
+    {0x3C,0x40,0x40,0x20,0x7C,0x00}, // 117 'u'
+    {0x1C,0x20,0x40,0x20,0x1C,0x00}, // 118 'v'
+    {0x3C,0x40,0x30,0x40,0x3C,0x00}, // 119 'w'
+    {0x44,0x28,0x10,0x28,0x44,0x00}, // 120 'x'
+    {0x0C,0x50,0x50,0x50,0x3C,0x00}, // 121 'y'
+    {0x44,0x64,0x54,0x4C,0x44,0x00}, // 122 'z'
+    {0x00,0x08,0x36,0x41,0x00,0x00}, // 123 '{'
+    {0x00,0x00,0x7F,0x00,0x00,0x00}, // 124 '|'
+    {0x00,0x41,0x36,0x08,0x00,0x00}, // 125 '}'
+    {0x08,0x04,0x08,0x10,0x08,0x00}  // 126 '~'
+};
 // --- FUNÇÕES DE ATRASO CRÍTICO (us) ---
 void short_delay(void) {
 	__asm__ volatile("nop\n\t"
@@ -133,6 +252,7 @@ void buzzer_bips(uint8_t num_bips) {
 // --- Timer ISR (2ms) ---
 ISR(TIMER0_COMPA_vect) {
 	g_flag_2ms = 1;
+	g_millis += 2;
 	if(g_delay_counter_2ms > 0) {
 		g_delay_counter_2ms--;
 	}
@@ -173,7 +293,8 @@ ISR(PCINT1_vect) {
 				g_operating_mode = MODE_AUTOMATIC;
 			}
 			g_mode_changed = 1; // Sinalizar ao main loop
-			control_motor(1);
+			control_motor_1(1);
+			control_motor_2(1);
 			buzzer_bips(1); // 1 bip na troca de modo
 			g_mode_locked = 1; // Bloquear mais mudanças
 		}
@@ -210,12 +331,12 @@ char uart_read(void) {
 		while (!(UCSR0A & (1<<RXC0)));
     return UDR0;
 }
-void check_uart_commands(void) {
+void check_uart_cmds(void) {
     if (uart_available()) {
         char cmd = uart_read();
         switch(cmd) {
-            case 'A': if(g_operating_mode!=0){uart_write("A"); g_operating_mode=0;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);} break;
-            case 'M': if(g_operating_mode!=1){g_operating_mode=1;g_mode_changed=1;buzzer_bips(1);control_motor(PARAR);set_led_brightness(0);} break;
+            case 'A': if(g_operating_mode!=0){g_operating_mode=0;g_mode_changed=1;buzzer_bips(1);control_motor_1(PARAR);control_motor_2(PARAR);} break;
+            case 'M': if(g_operating_mode!=1){g_operating_mode=1;g_mode_changed=1;buzzer_bips(1);control_motor_1(PARAR);control_motor_2(PARAR);set_led_brightness(0);} break;
             case 'U': if(g_operating_mode==0){
 							if(g_target_lux<LUX_MAX)g_target_lux+=LUX_STEP;
 							g_last_setpoint_value=g_target_lux;
@@ -224,13 +345,15 @@ void check_uart_commands(void) {
 								else set_led_brightness(255);}
 								break;
             case 'D': if(g_operating_mode==0){if(g_target_lux>LUX_MIN)g_target_lux-=LUX_STEP;g_last_setpoint_value=g_target_lux;}else{if(g_led_brightness>25)set_led_brightness(g_led_brightness-10);else set_led_brightness(0);} break;
-            case 'O': if(g_operating_mode==1)control_motor(FECHAR); break;
-            case 'C': if(g_operating_mode==1)control_motor(ABRIR); break;
-            case 'S': if(g_operating_mode==1)control_motor(PARAR); break;
+            case 'O': if(g_operating_mode==1)control_motor_1(ABRIR); break;
+            case 'C': if(g_operating_mode==1)control_motor_1(FECHAR); break;
+            case 'S': if(g_operating_mode==1)control_motor_1(PARAR); break;
+						case 'X': if(g_operating_mode==1)control_motor_2(ABRIR); break;
+            case 'F': if(g_operating_mode==1)control_motor_2(FECHAR); break;
+            case 'P': if(g_operating_mode==1)control_motor_2(PARAR); break;
         }
     }
 }
-// --- LÓGICA DE CONTROLO DE SETPOINT (+/-) ---
 void adjust_setpoint_control(void) {
     // --- BOTÃO MAIS (UP) COM DEBOUNCE ---
     if (PIND & (1 << BOTAO_MAIS)) {
@@ -283,33 +406,86 @@ void adjust_setpoint_control(void) {
             g_fix_state = 0;
         }
     }
+}	
+void servo_led_hybrid_control(void) {
+    int16_t error = (int16_t)g_target_lux - (int16_t)g_averaged_lux;
+    static uint16_t led_timer = 0;
+
+    if(g_sensor_count == 0 || g_init_state != 255) return;
+
+    // 1. LIMITES PRIMEIRO
+    if (g_blind1_pos >= BLIND1_MAX_TICKS) control_motor_1(PARAR);
+    if (g_blind1_pos <= 0)                control_motor_1(PARAR);
+    if (g_blind2_pos >= BLIND2_MAX_TICKS) control_motor_2(PARAR);
+    if (g_blind2_pos <= 0)                control_motor_2(PARAR);
+
+    // 2. Se estamos dentro da banda → parar tudo
+    if (abs(error) <= LUX_BAND_ERROR) {
+        control_motor_1(PARAR);
+        control_motor_2(PARAR);
+        return;
+    }
+
+    // 3. FALTA LUZ → abrir
+    if (error > LUX_BAND_ERROR) {
+
+        if (g_blind1_pos < BLIND1_MAX_TICKS) {
+            control_motor_1(ABRIR);
+            control_motor_2(PARAR);
+            set_led_brightness(0);
+        }
+        else if (g_blind2_pos < BLIND2_MAX_TICKS) {
+            control_motor_1(PARAR);
+            control_motor_2(ABRIR);
+            set_led_brightness(0);
+        }
+        else {
+            control_motor_1(PARAR);
+            control_motor_2(PARAR);
+
+            led_timer++;
+            if (led_timer >= LED_FADE_INTERVAL) {
+                led_timer = 0;
+                if (g_led_brightness < MAX_LED_PWM)
+                    set_led_brightness(g_led_brightness + 10);
+            }
+        }
+    }
+
+    // 4. LUZ A MAIS → fechar
+    else {
+
+        if (g_led_brightness > 0) {
+            control_motor_1(PARAR);
+            control_motor_2(PARAR);
+
+            led_timer++;
+            if (led_timer >= LED_FADE_INTERVAL) {
+                led_timer = 0;
+                if (g_led_brightness >= 10) set_led_brightness(g_led_brightness - 10);
+                else set_led_brightness(0);
+            }
+        }
+        else if (g_blind1_pos > 0) {
+            control_motor_1(FECHAR);
+            control_motor_2(PARAR);
+        }
+        else if (g_blind2_pos > 0) {
+            control_motor_1(PARAR);
+            control_motor_2(FECHAR);
+        }
+        else {
+            control_motor_1(PARAR);
+            control_motor_2(PARAR);
+        }
+    }
 }
-void servo_control_automatic(void) {
-	int16_t error = (int16_t) g_target_lux - (int16_t) g_averaged_lux;
-	// Se o sistema ainda está a inicializar o BH1750, não atuar
-	if(g_sensor_count == 0 || g_init_state != 255) return;
-	
-	if(abs(error) <= LUX_BAND_ERROR) {
-		control_motor(PARAR);
-		return;
-		
-	} else if(error > LUX_BAND_ERROR) {
-		// Erro positivo -> abrir
-			if(g_estado_atual != ABRIR) {
-			control_motor(ABRIR);
-			}
-		} else {
-		// Erro negativo -> fechar
-		if(g_estado_atual != FECHAR) {
-			control_motor(FECHAR);
-		}
-		}
-}
+
 // --- I2C Functions ---
 void inic_i2c(void) {
 	TWCR |= (1 << TWEN);
 	TWSR = 0;
-	TWBR = 72;
+	TWBR = 12;
 	DDRC &= ~((1 << PC4) | (1 << PC5));
 	PORTC |= (1 << PC4) | (1 << PC5);
 }
@@ -350,53 +526,124 @@ uint8_t i2c_read_nack(void) {
 uint8_t i2c_get_status(void) {
 	return TWSR & 0b11111000;
 }
-// --- LCD Functions ---
-void i2c_lcd_send(uint8_t data) {
+void ssd1306_cmd(uint8_t cmd) {
+	i2c_start(); // write mode
+	i2c_write(SSD1306_ADDR << 1);// Co = 0, D/C = 0 (cmd)
+	i2c_write(0x00); 
+	i2c_write(cmd);
+	i2c_stop(); 
+}
+void ssd1306_data(uint8_t data) {
 	i2c_start();
-	i2c_write(LCD_I2C_ADDR << 1);
-	i2c_write(data);
-	i2c_stop();
+	i2c_write(SSD1306_ADDR << 1);// Co = 0, D/C = 1 (data)
+	i2c_write(0x40); 
+	i2c_write(data); 
+	i2c_stop(); 
 }
-void lcd_write_nibble(uint8_t nibble, uint8_t rs) {
-	uint8_t data = 0;
-	if(nibble & 0b1000) data |= (1 << 0); // D7 -> P0
-	if(nibble & 0b0100) data |= (1 << 1); // D6 -> P1
-	if(nibble & 0b0010) data |= (1 << 2); // D5 -> P2
-	if(nibble & 0b0001) data |= (1 << 3); // D4 -> P3
-	if(rs) data |= PCF_RS;
-	// EN high
-	i2c_lcd_send(data | PCF_EN);
-	delay_us(200);
-	// EN low
-	i2c_lcd_send(data & ~PCF_EN);
-	delay_us(200);
+void ssd1306_init(void) {
+    ssd1306_cmd(0xAE); // Display OFF
+    ssd1306_cmd(0x20); ssd1306_cmd(0x02); // Page Addressing
+    ssd1306_cmd(0xB0); // Start Page 0
+    ssd1306_cmd(0xC8); // COM Output Scan Dec
+    ssd1306_cmd(0x00); // Low Col
+    ssd1306_cmd(0x10); // High Col
+    ssd1306_cmd(0x40); // Start Line 0
+    ssd1306_cmd(0x81); ssd1306_cmd(0xCF); // Contrast
+    ssd1306_cmd(0xA1); // Segment Remap
+    ssd1306_cmd(0xA6); // Normal
+    ssd1306_cmd(0xA8); ssd1306_cmd(0x3F); // Mux
+    ssd1306_cmd(0x8D); ssd1306_cmd(0x14); // Charge Pump
+    ssd1306_cmd(0xAF); // Display ON
 }
-void lcd_write_byte(uint8_t data, uint8_t rs) {
-	lcd_write_nibble(data >> 4, rs); // High bits
-	lcd_write_nibble(data & 0b00001111, rs); // Low bits
+void ssd1306_clear(void) {
+    for (uint8_t page = 0; page < 8; page++) {
+        ssd1306_cmd(0xB0 + page); // page address
+        ssd1306_cmd(0x00);        // low column
+        ssd1306_cmd(0x10);        // high column
+        for (uint8_t col = 0; col < 128; col++) {
+            ssd1306_data(0x00);
+        }
+    }
 }
-void lcd_clear(void) {
-	lcd_write_byte(0b00000001, 0);
+void ssd1306_clear_line(uint8_t row) {
+	ssd1306_set_cursor(row, 0); 
+	for(uint8_t i = 0; i < 128; i++) 
+	ssd1306_data(0x00); 
 }
-void lcd_set_cursor(uint8_t row, uint8_t col) {
-	uint8_t addr;
-	if(row == 0) {
-		addr = 0b10000000 + col;
-	} else {
-		addr = 0b11000000 + col;
-	}
-	lcd_write_byte(addr, 0);
+void ssd1306_char(char c) {
+    if (c < 32 || c > 127) c = '?';
+    for (uint8_t i = 0; i < 6; i++) {
+        ssd1306_data(font6x8[c - 32][i]);
+    }
 }
-void lcd_write_string(const char * str) {
-	while( * str) {
-		lcd_write_byte( * str++, 1);
-	}
+void ssd1306_print(const char *str) {
+    while (*str) {
+        ssd1306_char(*str++);
+    }
 }
-void lcd_init_setup_cmds(void) {
-	lcd_write_byte(0b00101000, 0); // Function set: 4-bit, 2 lines, 5x8 dots
-	lcd_write_byte(0b00001100, 0); // Display on, cursor off, blink off
-	lcd_write_byte(0b00000001, 0); // Clear Display
-	lcd_write_byte(0b00000110, 0); // Entry mode: Increment cursor, no display shift
+void ssd1306_print_xy(uint8_t row, uint8_t col, const char *str) {
+    ssd1306_set_cursor(row, col);
+    ssd1306_print(str);
+}
+void ssd1306_set_cursor(uint8_t row, uint8_t col) {
+    ssd1306_cmd(0xB0 + row);          // page (0–7)
+    ssd1306_cmd(0x00 + (col & 0x0F)); // low column
+    ssd1306_cmd(0x10 + (col >> 4));   // high column
+}
+const char* motor_state_to_str(Servo_pos s) {
+  switch(s) {
+    case ABRIR:  return "ABRIR";
+    case FECHAR: return "FECHAR";
+    default:     return "PARAR";
+  }
+}
+void oled_write_line(uint8_t row, const char *text, char *last_buffer) { 
+  if(strcmp(text, last_buffer) == 0) return; // nada mudou → não redesenha 
+  strcpy(last_buffer, text); 
+  ssd1306_set_cursor(row, 0); 
+  ssd1306_print(" "); // limpa com espaços 
+  ssd1306_set_cursor(row, 0); 
+  ssd1306_print(text); 
+}
+void oled_update_status(void) {
+    char line[20];
+
+    // --- Linha 0: Lux atual ---
+    sprintf(line, "LUX: %4u lx", g_averaged_lux);
+    oled_write_line(0, line, last_line0);
+
+    // --- Linha 1: Modo ---
+    if(g_operating_mode == MODE_AUTOMATIC)
+        oled_write_line(1, "MODO: AUTOMATICO", last_line1);
+    else
+        oled_write_line(1, "MODO: MANUAL    ", last_line1);
+
+    // --- Linha 2: Estado dos motores ---
+    sprintf(line, "M1:%s M2:%s",
+        motor_state_to_str(g_motor1_action),
+        motor_state_to_str(g_motor2_action)
+    );
+    oled_write_line(2, line, last_line2);
+    // Linha 3: separador
+    ssd1306_set_cursor(3, 0);
+    ssd1306_print("----------------");
+    // --- Linha 4: Barra de luz ---
+    oled_draw_lux_bar(g_averaged_lux);
+}
+void oled_draw_lux_bar(uint16_t lux) {
+    uint32_t scaled = (uint32_t)lux * 128;
+    uint8_t width = scaled / LUX_MAX;
+    if(width > 127) width = 127;
+
+    if(width == last_bar_width)
+        return; // barra igual → não redesenha
+
+    last_bar_width = width;
+
+    ssd1306_set_cursor(4, 0);
+    for(uint8_t i = 0; i < 128; i++) {
+        ssd1306_data(i < width ? 0xFF : 0x00);
+    }
 }
 // --- BH1750 Functions ---
 uint8_t bh1750_send(uint8_t addr, uint8_t data) {
@@ -502,30 +749,52 @@ void buttons_inic(void) {
 	PCICR |= (1 << PCIE1);
 	PCMSK1 |= (1 << PCINT9);
 }
-void control_motor(Servo_pos pos_desejada) {
-	uint16_t valor_pwm_1A;
-	uint16_t valor_pwm_1B;
-	switch(pos_desejada) {
-		case FECHAR:
-			valor_pwm_1A = 160;
-			valor_pwm_1B = 150;
-			g_estado_atual = FECHAR;
+void control_motor_1(Servo_pos action) {
+    g_motor1_action = action;
+
+    uint16_t valor_pwm;
+    switch(action) {
+        case ABRIR:
+            valor_pwm = 175;
+            break;
+        case PARAR:
+            valor_pwm = 188;
+            break;
+        case FECHAR:
+            valor_pwm = 196;
+            break;
+    }
+    OCR1B = valor_pwm;
+}
+void control_motor_2(Servo_pos action) {
+    g_motor2_action = action;
+
+	uint16_t valor_pwm;
+	switch(action) {
+		case ABRIR:
+			valor_pwm = 169;
 			break;
 		case PARAR:
-			valor_pwm_1A = 188;
-			valor_pwm_1B = 188;
-			g_estado_atual = PARAR;
+			valor_pwm = 188;
 			break;
-		case ABRIR:
-			valor_pwm_1A = 210;
-			valor_pwm_1B = 220;
-			g_estado_atual = ABRIR;
+		case FECHAR:
+			valor_pwm = 197;
 			break;
 	}
-	OCR1A = valor_pwm_1A;
-	OCR1B = valor_pwm_1B;
+	OCR1A = valor_pwm;
 }
-// Controlo Manual de LED
+void load_position_from_eeprom(void) {
+    uint16_t val1 = eeprom_read_word(EEP_POS1_ADDR);
+    if (val1 > (uint16_t)BLIND1_MAX_TICKS) g_blind1_pos = 0; else g_blind1_pos = (int32_t)val1;
+    
+    uint16_t val2 = eeprom_read_word(EEP_POS2_ADDR);
+    if (val2 > (uint16_t)BLIND2_MAX_TICKS) g_blind2_pos = 0; else g_blind2_pos = (int32_t)val2;
+}
+void save_position_to_eeprom(void) {
+    // Grava apenas se o valor mudou (a função update faz isso sozinha)
+    eeprom_update_word(EEP_POS1_ADDR, (uint16_t)g_blind1_pos);
+    eeprom_update_word(EEP_POS2_ADDR, (uint16_t)g_blind2_pos);
+}
 void manual_led_control(void) {
 	static uint8_t repeat_delay = 0;
 	    if (repeat_delay > 0) {
@@ -552,181 +821,207 @@ void set_led_brightness(uint8_t brightness) {
     g_led_brightness = brightness;
 }
 // verifica se há objeto < ~20 cm ---
-uint8_t sonar_is_close(uint8_t sonar_id) {
-	uint8_t trig_pin;
-	uint8_t echo_pin;
-	DDRC |= (1 << trig_pin);
-  DDRD &= ~(1 << echo_pin);
+uint8_t sonar_is_close(uint8_t sonar_id)
+{
+  static uint32_t last_trigger_time_1 = 0;
+  static uint32_t last_trigger_time_2 = 0;
+  static uint8_t stable_state_1 = 0;
+  static uint8_t stable_state_2 = 0;
 
-	if(sonar_id == 1) {
-		trig_pin = SONAR1_TRIG;
-		echo_pin = SONAR1_ECHO;
-	} else {
-		trig_pin = SONAR2_TRIG;
-		echo_pin = SONAR2_ECHO;
-	}
-	// Trigger: pulso de 10 us
-	PORTC &= ~(1 << trig_pin);
-	delay_us(2);
-	PORTC |= (1 << trig_pin);
-	delay_us(10);
-	PORTC &= ~(1 << trig_pin);
-	// Espera echo subir (com timeout simples)
-	uint16_t timeout = 0;
-	while(!(PIND & (1 << echo_pin)) && timeout < 5000) {
-		timeout++;
-	}
-	if(timeout >= 5000) {
-		return 0; // sem resposta
-	}
-	// Mede largura do pulso de echo usando TCNT1 (4 us por tick)
-	uint16_t start = TCNT1;
-	timeout = 0;
-	while((PIND & (1 << echo_pin)) && timeout < 5000) {
-		timeout++;
-	}
-	uint16_t end = TCNT1;
-	// Calcula diferença de ticks considerando wrap em ICR1 (5000)
-	uint16_t ticks;
-	if(end >= start) {
-		ticks = end - start;
-	} else {
-		ticks = (ICR1 - start) + end;
-	}
-	// Se ticks < limite -> menos de ~20 cm
-	if(ticks < SONAR_THRESHOLD_TICKS_20CM) {
-		return 1;
-	} else {
-		return 0;
-	}
+  uint8_t trig_pin, echo_pin;
+  uint32_t *last_time;
+  uint8_t *stable_state;
+
+  // Seleciona sonar
+  if (sonar_id == 1) {
+      trig_pin = SONAR1_TRIG;
+      echo_pin = SONAR1_ECHO;
+      last_time = &last_trigger_time_1;
+      stable_state = &stable_state_1;
+  } else {
+      trig_pin = SONAR2_TRIG;
+      echo_pin = SONAR2_ECHO;
+      last_time = &last_trigger_time_2;
+      stable_state = &stable_state_2;
+  }
+
+  // Intervalo mínimo entre triggers (60 ms)
+  if (g_millis - *last_time < 60) {
+      return *stable_state;
+  }
+  *last_time = g_millis;
+
+  uint8_t close_count = 0;
+
+  // Faz 3 leituras e aplica filtro de maioria
+  for (uint8_t i = 0; i < 3; i++)
+  {
+      // Trigger de 10 us
+      PORTC &= ~(1 << trig_pin);
+      delay_us(2);
+      PORTC |= (1 << trig_pin);
+      delay_us(10);
+      PORTC &= ~(1 << trig_pin);
+
+      delay_us(200); // evita eco imediato
+
+      // Mede pulso com interrupções desligadas
+      cli();
+
+      uint16_t timeout = 0;
+
+      // Espera echo subir
+      while (!(PIND & (1 << echo_pin)) && timeout < 7500) timeout++;
+      if (timeout >= 7500) { sei(); continue; }
+
+      uint16_t start = TCNT1;
+      timeout = 0;
+
+      // Espera echo descer
+      while ((PIND & (1 << echo_pin)) && timeout < 30000) timeout++;
+      uint16_t end = TCNT1;
+
+      sei();
+
+      if (timeout >= 30000) continue;
+
+      // Calcula ticks (Timer1 = 4 us/tick)
+      uint16_t ticks;
+      if (end >= start) ticks = end - start;
+      else ticks = (ICR1 - start) + end;
+
+      // Filtro de outliers
+      if (ticks < 20 || ticks > 4000) continue;
+
+      // Verifica se está abaixo do limite (~20 cm)
+      if (ticks < SONAR_THRESHOLD_TICKS_20CM) {
+          close_count++;
+      }
+
+      delay_us(500);
+  }
+
+  // Filtro de maioria (2 de 3)
+  uint8_t reading = (close_count >= 2) ? 1 : 0;
+
+  // Debounce lógico
+  if (reading == 1) {
+      if (*stable_state == 1) return 1;
+      *stable_state = 1;
+      return 0;
+  } else {
+      *stable_state = 0;
+      return 0;
+  }
 }
-// --- Lógica de gestos no modo MANUAL ---
-// S1 (baixo) -> S2 (cima)   => ABRIR
-// S2 (cima)  -> S1 (baixo)  => FECHAR
 void update_manual_gestures(void) {
-	static uint8_t s1_prev = 0;
-	static uint8_t s2_prev = 0;
-	uint8_t s1 = sonar_is_close(1);
-	uint8_t s2 = sonar_is_close(2);
-	// Reset do gesto se o tempo expirar
-	if(g_gesture_timer == 0 && g_gesture_state != 0) {
-		g_gesture_state = 0;
-	}
-	// Estados:
-	// 0: idle, 1: S1 primeiro, 2: S2 primeiro
-	if(g_gesture_state == 0) {
-		// Procura primeira ativação
-		if(s1 && !s1_prev) {
-			g_gesture_state = 1; // S1 primeiro (de baixo para cima)
-			g_gesture_timer = GESTURE_TIMEOUT_TICKS;
-		} else if(s2 && !s2_prev) {
-			g_gesture_state = 2; // S2 primeiro (de cima para baixo)
-			g_gesture_timer = GESTURE_TIMEOUT_TICKS;
-		}
-	} else if(g_gesture_state == 1) {
-		// Já detetou S1, agora espera S2
-		if(s2) {
-			// Gesto de BAIXO para CIMA -> ABRIR
-				control_motor(ABRIR);
-				g_gesture_state = 0;
-				g_gesture_timer = 0;
-		}
-	} else if(g_gesture_state == 2) {
-		// Já detetou S2, agora espera S1
-		if(s1) {
-			// Gesto de CIMA para BAIXO -> FECHAR
-				control_motor(FECHAR);
-				g_gesture_state = 0;
-				g_gesture_timer = 0;
-		}
-	}
-	s1_prev = s1;
-	s2_prev = s2;
+  static uint8_t s1_prev = 0;
+  static uint8_t s2_prev = 0;
+  uint8_t s1 = sonar_is_close(1);
+  uint8_t s2 = sonar_is_close(2);
+  // Reset do gesto se o tempo expirar
+  if(g_gesture_timer == 0 && g_gesture_state != 0) {
+      g_gesture_state = 0;
+      s1_prev = 0;
+      s2_prev = 0;
+  }
+  // BLOQUEIO APÓS UM GESTO — espera a mão sair
+  if(g_gesture_state == 0 && g_gesture_timer == 0) {
+      if(s1 || s2) {
+          s1_prev = s1;
+          s2_prev = s2;
+          return;
+      }
+  }
+  // Máquina de estados
+  if(g_gesture_state == 0) {
+      if(s1 && !s1_prev) {
+          g_gesture_state = 1;
+          g_gesture_timer = GESTURE_TIMEOUT_TICKS;
+      } 
+      else if(s2 && !s2_prev) {
+          g_gesture_state = 2;
+          g_gesture_timer = GESTURE_TIMEOUT_TICKS;
+      }
+  }
+  else if(g_gesture_state == 1) {
+      if(s2) {
+          control_motor_1(ABRIR);
+          control_motor_2(ABRIR);
+          g_gesture_state = 0;
+          g_gesture_timer = 0;
+      }
+  }
+  else if(g_gesture_state == 2) {
+      if(s1) {
+          control_motor_1(FECHAR);
+          control_motor_2(FECHAR);
+          g_gesture_state = 0;
+          g_gesture_timer = 0;
+      }
+  }
+  s1_prev = s1;
+  s2_prev = s2;
 }
+
 // --- FUNÇÃO DE INICIALIZAÇÃO DE HARDWARE ---
 void inic(void) {
+	//load_position_from_eeprom();
 	uart_init();
 	onda1Hz_init();
 	pwm_led_init();
 	pwm_Servo_init();
 	buttons_inic();
 	sei();
+
 }
 // --- MÁQUINA DE ESTADOS PRINCIPAL (NON-BLOCKING) ---
 void inic_non_blocking(void) {
-	switch(g_init_state) {
-		case 0:
-			inic_i2c();
-			START_NB_DELAY_MS(50); // Power-on wait (50ms)
-			g_init_state = 1;
-			break;
-		case 1:
-			if(IS_DELAY_FINISHED() == 1) {
-				lcd_write_nibble(0x03, 0);
-				START_NB_DELAY_MS(5);
-				g_init_state = 2;
-			}
-			break;
-		case 2:
-			if(IS_DELAY_FINISHED() == 1) {
-				lcd_write_nibble(0x03, 0);
-				START_NB_DELAY_MS(1);
-				g_init_state = 3;
-			}
-			break;
-		case 3:
-			if(IS_DELAY_FINISHED() == 1) {
-				lcd_write_nibble(0x03, 0);
-				START_NB_DELAY_MS(1);
-				g_init_state = 4;
-			}
-			break;
-		case 4:
-			if(IS_DELAY_FINISHED() == 1) {
-				lcd_write_nibble(0x02, 0); // 4-bit mode 
-				lcd_init_setup_cmds();
-				lcd_set_cursor(0, 0);
-				lcd_write_string("Projeto LABSI");
-				START_NB_DELAY_MS(1500);
-				g_init_state = 5;
-			}
-			break;
-		case 5:
-			if(IS_DELAY_FINISHED() == 1) {
-				lcd_clear();
-				detect_sensors();
-				START_NB_DELAY_MS(10);
-				g_init_state = 6;
-			}
-			break;
-		case 6:
-			if(IS_DELAY_FINISHED() == 1) {
-				lcd_set_cursor(0, 0);
-				if(g_sensor_count == 0) {
-					lcd_write_string("Sem Sensores");
-				} else if(g_sensor_count == 1) {
-					lcd_write_string("1 Sensor Pronto");
-				} else {
-					lcd_write_string("2 Sensores");
-					lcd_set_cursor(1, 0);
-					lcd_write_string("Prontos");
-				}
-				START_NB_DELAY_MS(1500);
-				g_init_state = 7;
-			}
-			break;
-		case 7:
-			if(IS_DELAY_FINISHED() == 1) {
-				lcd_clear();
-				g_setup_done = 1;
-				g_init_state = 255;
-				buzzer_bips(3);
-				uart_write_string("Inics finalizadas\n");
-			}
-			break;
-	}
+  switch(g_init_state) {
+
+    case 0:
+        inic_i2c();
+        START_NB_DELAY_MS(10);   // pequeno delay opcional
+        g_init_state = 1;
+        break;
+    case 1:
+        if(IS_DELAY_FINISHED()) {
+            ssd1306_init();
+            ssd1306_clear();
+            ssd1306_set_cursor(0, 0);
+            ssd1306_print("Projeto LABSI");
+            START_NB_DELAY_MS(1500);
+            g_init_state = 2;
+        }
+        break;
+    case 2:
+        if(IS_DELAY_FINISHED()) {
+            detect_sensors();
+            ssd1306_clear();
+            ssd1306_set_cursor(0, 0);
+            if(g_sensor_count == 0) {
+                ssd1306_print("Sem Sensores");
+            } 
+            else if(g_sensor_count == 1) {
+                ssd1306_print("1 Sensor Pronto");
+            } 
+            else {
+                ssd1306_print("2 Sensores Prontos");
+            }
+            START_NB_DELAY_MS(1500);
+            g_init_state = 3;
+        }
+        break;
+    case 3:
+        if(IS_DELAY_FINISHED()) {
+            ssd1306_clear();
+            g_setup_done = 1;
+            g_init_state = 255;
+            buzzer_bips(3);
+        }
+        break;
+  }
 }
-// --- LOOP PRINCIPAL ---
 int main(void) {
 	inic();
 	char buffer[32];
@@ -741,48 +1036,56 @@ int main(void) {
 				// 1. LEITURA DE LUX e MÉDIA
 				g_lux_value = bh1750_read_sensors();
 				g_averaged_lux = average_lux(g_lux_value);
-				check_uart_commands();
+				check_uart_cmds();
+				
+        // Rastreamento Posição
+        if(g_motor1_action==ABRIR && g_blind1_pos<BLIND1_MAX_TICKS) g_blind1_pos+=STEP_OPEN;
+        else if(g_motor1_action==FECHAR && g_blind1_pos>0) g_blind1_pos-=STEP_CLOSE;
+        
+        if(g_motor2_action==ABRIR && g_blind2_pos<BLIND2_MAX_TICKS) g_blind2_pos+=STEP_OPEN;
+        else if(g_motor2_action==FECHAR && g_blind2_pos>0) g_blind2_pos-=STEP_CLOSE;
+
+        if((g_motor1_action==PARAR && g_last_motor1_action!=PARAR) || (g_motor2_action==PARAR && g_last_motor2_action!=PARAR)); save_position_to_eeprom();
+        g_last_motor1_action = g_motor1_action;
+        g_last_motor2_action = g_motor2_action;
+
 				// 2. Controlo dependendo do modo
 				static uint8_t sonar_tick = 0;
 				if(g_operating_mode == MODE_AUTOMATIC) {
 					adjust_setpoint_control();
-					servo_control_automatic();
+					servo_led_hybrid_control();
 				} else {
 					manual_led_control();
 					sonar_tick++;
-						if(sonar_tick >= 25) { // ~50 ms
+						if(sonar_tick >= 50) { // ~100 ms
 							sonar_tick = 0;
 							update_manual_gestures();
 						}
 				}
-				// Estado do motor para debug em LCD
-				char motor_status = 'E';
-				switch(g_estado_atual) {
-					case ABRIR:
-						motor_status = 'A';
-						break;
-					case PARAR:
-						motor_status = 'P';
-						break;
-					case FECHAR:
-						motor_status = 'F';
-						break;
-				}
-				// 3. ATUALIZAÇÃO DO DISPLAY (200ms)
-				if(g_display_counter >= 100) {
+				// 3. ATUALIZAÇÃO DO DISPLAY (100ms)
+				if(g_display_counter >= 10) {
 					g_display_counter = 0;
-					// Define valor de display (Preview vs Fixo)
-					uint16_t display_setpoint = g_target_lux;
-					if(g_fix_state != 0) {
-						display_setpoint = g_last_setpoint_value;
-					}
-					sprintf(buffer, "MODO:%s SET:%4u",
-						(g_operating_mode == MODE_AUTOMATIC) ? "A" : "M", display_setpoint);
-					lcd_set_cursor(0, 0);
-					lcd_write_string(buffer);
-					sprintf(buffer, "Lux:%4u Motor:%c", g_averaged_lux, motor_status);
-					lcd_set_cursor(1, 0);
-					lcd_write_string(buffer);
+					oled_update_status();
+					char op_mode_char = (g_operating_mode == MODE_AUTOMATIC) ? 'A' : 'M';
+					uint16_t disp_set = (g_fix_state != 0) ? g_last_setpoint_value : g_target_lux;
+					
+					
+					char motor1_char = 'E';
+					if (g_motor1_action == ABRIR) motor1_char = 'A';
+					else if (g_motor1_action == FECHAR) motor1_char = 'F';
+					else motor1_char = 'P';
+
+					char motor2_char = 'E';
+					if (g_motor2_action == ABRIR) motor2_char = 'A';
+					else if (g_motor2_action == FECHAR) motor2_char = 'F';
+					else motor2_char = 'P';
+
+					// 2. Envia para o ESP32 (Protocolo: D:Modo,Set,Lux,Motor,Ticks)
+					// Nota: Usamos uart_print que deve ter sido criada anteriormente
+					char serial_buffer[40];
+					sprintf(serial_buffer, "D:%c,%u,%u,%c,%c,%ld,%ld\n", 
+					        op_mode_char, disp_set, g_averaged_lux, motor1_char,motor2_char, g_blind1_pos, g_blind2_pos);
+					uart_write_string(serial_buffer);
 				}
 			}
 		}

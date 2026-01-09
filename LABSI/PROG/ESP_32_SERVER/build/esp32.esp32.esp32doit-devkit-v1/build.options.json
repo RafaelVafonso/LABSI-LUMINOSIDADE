@@ -1,0 +1,10 @@
+{
+  "additionalFiles": "",
+  "builtInLibrariesFolders": "C:\\Users\\Utilizador\\AppData\\Local\\Arduino15\\libraries",
+  "compiler.optimization_flags": "-Os",
+  "customBuildProperties": "build.warn_data_percentage=75",
+  "fqbn": "esp32:esp32:esp32doit-devkit-v1:UploadSpeed=921600,FlashFreq=80,DebugLevel=none,EraseFlash=none",
+  "hardwareFolders": "c:\\Users\\Utilizador\\AppData\\Local\\Arduino15\\packages",
+  "otherLibrariesFolders": "c:\\Users\\Utilizador\\Desktop\\Rafa\\ARDUINO\\libraries",
+  "sketchLocation": "C:\\Users\\Utilizador\\Desktop\\RAFA\\UNI\\LABSI-LUMINOSIDADE\\LABSI\\PROG\\ESP_32_SERVER"
+}
