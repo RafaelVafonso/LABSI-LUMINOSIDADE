@@ -33,26 +33,22 @@ uint8_t last_bar_width = 255;
 #define SONAR2_TRIG PC3
 #define SONAR2_ECHO PD3
 // 20 cm ~ 1156 us de echo -> com Timer1 a 4 us/tick => ~290 ticks
-#define SONAR_THRESHOLD_TICKS_20CM 2000
+#define SONAR_THRESHOLD_TICKS_20CM 1000
 #define LUX_STEP 50
 #define LUX_MAX 1000
 #define LUX_MIN 0
 #define LUX_BAND_ERROR 40
-#define I2C_TIMEOUT_CYCLES 20000
+#define I2C_TIMEOUT_CYCLES 2000
 #define FIX_TIME_TICKS 1000
 #define DEBOUNCE_TICKS 10
 
 #define GESTURE_TIMEOUT_TICKS 500
 
-#define BLIND1_MAX_TICKS 6000000
-#define BLIND2_MAX_TICKS 3300000
-#define STEP_CLOSE 10           // Velocidade descer
-#define STEP_OPEN 13            // Velocidade subir (compensação gravidade)
+#define BLIND1_MAX_TICKS 60000
+#define BLIND2_MAX_TICKS 60000
+#define STEP_CLOSE 2           // Velocidade descer
+#define STEP_OPEN 2            // Velocidade subir (compensação gravidade)
 #define LED_FADE_INTERVAL 100
-
-// Endereço EEPROM para guardar posicao
-#define EEP_POS1_ADDR (uint16_t*)0x00
-#define EEP_POS2_ADDR (uint16_t*)0x02
 
 #define GATE_PIN PB3
 #define MAX_LED_PWM 255
@@ -78,7 +74,7 @@ volatile uint16_t g_fix_timer = 0; // Timer de 2 segundos
 volatile uint8_t g_gesture_state = 0; // 0: idle, 1: S1 primeiro, 2: S2 primeiro
 volatile uint16_t g_gesture_timer = 0; // timeout do gesto
 volatile uint32_t g_millis = 0;
-volatile uint16_t g_debug_ciclos = 0;
+
 
 uint8_t g_up_debounce = 0;
 uint8_t g_down_debounce = 0;
@@ -103,12 +99,12 @@ typedef enum {
 Servo_pos;
 Servo_pos g_motor1_action = PARAR;
 Servo_pos g_motor2_action = PARAR;
-Servo_pos g_last_motor1_action = PARAR;//serve para comparar este estado de modo a obter correspondencias e guardar na eeprom
-Servo_pos g_last_motor2_action = PARAR;
+
 
 // Posições virtuais independentes
 int32_t g_blind1_pos = 0; 
 int32_t g_blind2_pos = 0;
+int16_t g_debug_ciclos = 0;
 
 void control_motor_1(Servo_pos action);
 void control_motor_2(Servo_pos action);
@@ -260,8 +256,7 @@ ISR(TIMER0_COMPA_vect) {
     
 	if(g_delay_counter_2ms > 0) g_delay_counter_2ms--;
 	if(g_fix_state == 2 && g_fix_timer > 0) g_fix_timer--;
-	if(g_gesture_timer > 0) g_gesture_timer--; 	// Timer de gesto (sonares)
-	
+	if(g_gesture_timer > 0) g_gesture_timer--; 	// Timer de gesto (sonares)	
 }
 ISR(PCINT1_vect) {
 	uint8_t current_state = PINC & (1 << PC1);
@@ -330,7 +325,7 @@ void check_uart_cmds(void) {
             case 'O': if(g_operating_mode==1)control_motor_1(ABRIR); break;
             case 'C': if(g_operating_mode==1)control_motor_1(FECHAR); break;
             case 'S': if(g_operating_mode==1)control_motor_1(PARAR); break;
-						case 'X': if(g_operating_mode==1)control_motor_2(ABRIR); break;
+			case 'X': if(g_operating_mode==1)control_motor_2(ABRIR); break;
             case 'F': if(g_operating_mode==1)control_motor_2(FECHAR); break;
             case 'P': if(g_operating_mode==1)control_motor_2(PARAR); break;
         }
@@ -610,7 +605,6 @@ void oled_update_status(void) {
     ssd1306_print("----------------");
     // --- Linha 4: Barra de luz ---
     oled_draw_lux_bar(g_averaged_lux);
-
     sprintf(line, "Ciclos: %4u", g_debug_ciclos);
     oled_write_line(4, line, last_line3);
 }
@@ -624,7 +618,7 @@ void oled_draw_lux_bar(uint16_t lux) {
 
     last_bar_width = width;
 
-    ssd1306_set_cursor(5, 0);
+    ssd1306_set_cursor(4, 0);
     for(uint8_t i = 0; i < 128; i++) {
         ssd1306_data(i < width ? 0xFF : 0x00);
     }
@@ -745,7 +739,7 @@ void control_motor_1(Servo_pos action) {
             valor_pwm = 188;
             break;
         case FECHAR:
-            valor_pwm = 196;
+            valor_pwm = 198;
             break;
     }
     OCR1B = valor_pwm;
@@ -766,27 +760,6 @@ void control_motor_2(Servo_pos action) {
 			break;
 	}
 	OCR1A = valor_pwm;
-}
-void load_position_from_eeprom(void) {
-    uint16_t val1 = eeprom_read_word(EEP_POS1_ADDR);
-    if (val1 > BLIND1_MAX_TICKS) val1 = 0;
-    g_blind1_pos = val1;
-
-    uint16_t val2 = eeprom_read_word(EEP_POS2_ADDR);
-    if (val2 > BLIND2_MAX_TICKS) val2 = 0;
-    g_blind2_pos = val2;
-}
-void save_position_to_eeprom(void) {
-
-    if (g_blind1_pos < 0) g_blind1_pos = 0;
-    if (g_blind1_pos > BLIND1_MAX_TICKS) g_blind1_pos = BLIND1_MAX_TICKS;
-
-    if (g_blind2_pos < 0) g_blind2_pos = 0;
-    if (g_blind2_pos > BLIND2_MAX_TICKS) g_blind2_pos = BLIND2_MAX_TICKS;
-
-    // Guardar apenas se mudou
-    eeprom_update_word(EEP_POS1_ADDR, (uint16_t)g_blind1_pos);
-    eeprom_update_word(EEP_POS2_ADDR, (uint16_t)g_blind2_pos);
 }
 void manual_led_control(void) {
 	static uint8_t repeat_delay = 0;
@@ -907,8 +880,8 @@ void update_manual_gestures(void){
         // ESTADO 1: Iniciou na Esquerda -> Espera Direita
         case 1:
             if (s2) { // Não precisa de borda, basta presença
-                control_motor_1(ABRIR); // Ou FECHAR, dependendo da tua lógica
-                control_motor_2(ABRIR);
+                control_motor_1(FECHAR); // Ou FECHAR, dependendo da tua lógica
+                control_motor_2(FECHAR);
                 g_gesture_state = 3;    // Vai para Bloqueio
                 g_gesture_timer = GESTURE_TIMEOUT_TICKS; 
             }
@@ -917,8 +890,8 @@ void update_manual_gestures(void){
         // ESTADO 2: Iniciou na Direita -> Espera Esquerda
         case 2:
             if (s1) {
-                control_motor_1(FECHAR);
-                control_motor_2(FECHAR);
+                control_motor_1(ABRIR);
+                control_motor_2(ABRIR);
                 g_gesture_state = 3;    // Vai para Bloqueio
                 g_gesture_timer = GESTURE_TIMEOUT_TICKS;
             }
@@ -938,9 +911,9 @@ void update_manual_gestures(void){
     s1_prev = s1;
     s2_prev = s2;
 }
+
 // --- FUNÇÃO DE INICIALIZAÇÃO DE HARDWARE ---
 void inic(void) {
-	load_position_from_eeprom();
 	uart_init();
 	onda1Hz_init();
 	pwm_led_init();
@@ -1003,31 +976,6 @@ while(1) {
 	if(!g_setup_done) {
 		inic_non_blocking();
 	} else {
-            // Rastreamento Posição
-            if(g_motor1_action==ABRIR && g_blind1_pos<BLIND1_MAX_TICKS) g_blind1_pos+=STEP_OPEN;
-            else if(g_motor1_action==FECHAR && g_blind1_pos>0) g_blind1_pos-=STEP_CLOSE;
-    
-            if(g_motor2_action==ABRIR && g_blind2_pos<BLIND2_MAX_TICKS) g_blind2_pos+=STEP_OPEN;
-            else if(g_motor2_action==FECHAR && g_blind2_pos>0) g_blind2_pos-=STEP_CLOSE;
-
-            if (g_blind1_pos >= BLIND1_MAX_TICKS) control_motor_1(PARAR);
-            if (g_blind1_pos <= 0)                control_motor_1(PARAR);
-            if (g_blind2_pos >= BLIND2_MAX_TICKS) control_motor_2(PARAR);
-            if (g_blind2_pos <= 0)                control_motor_2(PARAR);
-
-            if (g_motor1_action == PARAR && g_last_motor1_action != PARAR) {
-            if (g_blind1_pos < 0) g_blind1_pos = 0;
-            if (g_blind1_pos > BLIND1_MAX_TICKS) g_blind1_pos = BLIND1_MAX_TICKS;
-            save_position_to_eeprom();
-            }
-            if (g_motor2_action == PARAR && g_last_motor2_action != PARAR) {
-            if (g_blind2_pos < 0) g_blind2_pos = 0;
-            if (g_blind2_pos > BLIND2_MAX_TICKS) g_blind2_pos = BLIND2_MAX_TICKS;
-            save_position_to_eeprom();
-            }
-            g_last_motor1_action = g_motor1_action;
-            g_last_motor2_action = g_motor2_action;
-
         if(g_flag_50ms){
             g_flag_50ms = 0;
                 // 1. LEITURA DE LUX e MÉDIA
@@ -1076,6 +1024,18 @@ while(1) {
 	        } else {
 	        	PORTC &= ~(1 << BUZZER_PIN); // Desliga o Buzzer
 	        }
+            // Rastreamento Posição
+            if(g_motor1_action==ABRIR && g_blind1_pos<BLIND1_MAX_TICKS) g_blind1_pos+=STEP_OPEN;
+            else if(g_motor1_action==FECHAR && g_blind1_pos>0) g_blind1_pos-=STEP_CLOSE;
+
+            if(g_motor2_action==ABRIR && g_blind2_pos<BLIND2_MAX_TICKS) g_blind2_pos+=STEP_OPEN;
+            else if(g_motor2_action==FECHAR && g_blind2_pos>0) g_blind2_pos-=STEP_CLOSE;
+            /*
+            if (g_blind1_pos >= BLIND1_MAX_TICKS) control_motor_1(PARAR);
+            if (g_blind1_pos <= 0)                control_motor_1(PARAR);
+            if (g_blind2_pos >= BLIND2_MAX_TICKS) control_motor_2(PARAR);
+            if (g_blind2_pos <= 0)                control_motor_2(PARAR);
+            */
 			// 2. Controlo dependendo do modo
 			static uint8_t sonar_tick = 0;
             check_uart_cmds();
