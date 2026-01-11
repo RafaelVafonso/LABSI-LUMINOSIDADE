@@ -44,10 +44,10 @@ uint8_t last_bar_width = 255;
 
 #define GESTURE_TIMEOUT_TICKS 500
 
-#define BLIND1_MAX_TICKS 60000
-#define BLIND2_MAX_TICKS 60000
+#define BLIND1_MAX_TICKS 9000
+#define BLIND2_MAX_TICKS 7000
 #define STEP_CLOSE 2           // Velocidade descer
-#define STEP_OPEN 2            // Velocidade subir (compensação gravidade)
+#define STEP_OPEN 3            // Velocidade subir (compensação gravidade)
 #define LED_FADE_INTERVAL 100
 
 #define GATE_PIN PB3
@@ -65,7 +65,6 @@ volatile uint8_t g_contador = 0;
 volatile char g_flag_2ms = 0;
 volatile char g_flag_50ms = 0;
 volatile uint8_t g_contador_50ms = 0;
-volatile uint8_t g_display_counter = 0;
 volatile uint16_t g_last_setpoint_value = 100;
 volatile uint8_t g_buzzer_counter = 0;
 volatile uint8_t g_fix_state = 0; // 0: Estável, 1: Ajuste Ativo, 2: Contagem (2s)
@@ -74,7 +73,6 @@ volatile uint16_t g_fix_timer = 0; // Timer de 2 segundos
 volatile uint8_t g_gesture_state = 0; // 0: idle, 1: S1 primeiro, 2: S2 primeiro
 volatile uint16_t g_gesture_timer = 0; // timeout do gesto
 volatile uint32_t g_millis = 0;
-
 
 uint8_t g_up_debounce = 0;
 uint8_t g_down_debounce = 0;
@@ -99,7 +97,6 @@ typedef enum {
 Servo_pos;
 Servo_pos g_motor1_action = PARAR;
 Servo_pos g_motor2_action = PARAR;
-
 
 // Posições virtuais independentes
 int32_t g_blind1_pos = 0; 
@@ -585,7 +582,7 @@ void oled_update_status(void) {
     char line[20];
 
     // --- Linha 0: Lux atual ---
-    sprintf(line, "LUX: %4u lx", g_averaged_lux);
+    sprintf(line, "LUZ: %3u lx|SET: %3u", g_averaged_lux, g_target_lux);
     oled_write_line(0, line, last_line0);
 
     // --- Linha 1: Modo ---
@@ -606,7 +603,7 @@ void oled_update_status(void) {
     // --- Linha 4: Barra de luz ---
     oled_draw_lux_bar(g_averaged_lux);
     sprintf(line, "Ciclos: %4u", g_debug_ciclos);
-    oled_write_line(4, line, last_line3);
+    oled_write_line(5, line, last_line3);
 }
 void oled_draw_lux_bar(uint16_t lux) {
     uint32_t scaled = (uint32_t)lux * 128;
@@ -733,7 +730,7 @@ void control_motor_1(Servo_pos action) {
     uint16_t valor_pwm;
     switch(action) {
         case ABRIR:
-            valor_pwm = 175;
+            valor_pwm = 168;
             break;
         case PARAR:
             valor_pwm = 188;
@@ -750,13 +747,13 @@ void control_motor_2(Servo_pos action) {
 	uint16_t valor_pwm;
 	switch(action) {
 		case ABRIR:
-			valor_pwm = 169;
+			valor_pwm = 167;
 			break;
 		case PARAR:
 			valor_pwm = 188;
 			break;
 		case FECHAR:
-			valor_pwm = 197;
+			valor_pwm = 201;
 			break;
 	}
 	OCR1A = valor_pwm;
@@ -911,7 +908,6 @@ void update_manual_gestures(void){
     s1_prev = s1;
     s2_prev = s2;
 }
-
 // --- FUNÇÃO DE INICIALIZAÇÃO DE HARDWARE ---
 void inic(void) {
 	uart_init();
@@ -971,7 +967,6 @@ void inic_non_blocking(void) {
 }
 int main(void) {
 inic();
-char buffer[32];
 while(1) {
 	if(!g_setup_done) {
 		inic_non_blocking();
@@ -1003,7 +998,6 @@ while(1) {
         }
 		if(g_flag_2ms) {
 			g_flag_2ms = 0;
-            g_display_counter++;
             g_contador++;
 	        if(g_contador >= 250) {
 		        PORTD ^= (1 << PD6);
@@ -1025,15 +1019,16 @@ while(1) {
 	        	PORTC &= ~(1 << BUZZER_PIN); // Desliga o Buzzer
 	        }
             // Rastreamento Posição
+
             if(g_motor1_action==ABRIR && g_blind1_pos<BLIND1_MAX_TICKS) g_blind1_pos+=STEP_OPEN;
             else if(g_motor1_action==FECHAR && g_blind1_pos>0) g_blind1_pos-=STEP_CLOSE;
 
             if(g_motor2_action==ABRIR && g_blind2_pos<BLIND2_MAX_TICKS) g_blind2_pos+=STEP_OPEN;
             else if(g_motor2_action==FECHAR && g_blind2_pos>0) g_blind2_pos-=STEP_CLOSE;
             /*
-            if (g_blind1_pos >= BLIND1_MAX_TICKS) control_motor_1(PARAR);
+            if (g_blind1_pos >= BLIND1_MAX_TICKS - 100) control_motor_1(PARAR);
             if (g_blind1_pos <= 0)                control_motor_1(PARAR);
-            if (g_blind2_pos >= BLIND2_MAX_TICKS) control_motor_2(PARAR);
+            if (g_blind2_pos >= BLIND2_MAX_TICKS - 100) control_motor_2(PARAR);
             if (g_blind2_pos <= 0)                control_motor_2(PARAR);
             */
 			// 2. Controlo dependendo do modo
